@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Figma Token Fetcher
- * Fetches design tokens (colors, typography, spacing) from Figma and transforms them
- * into CSS variables and TypeScript tokens for the design system.
+ * Figma Token Fetcher for Speck DS
+ * Fetches design tokens from Figma - ONLY what's in the design, no hardcoded fallbacks
  */
 
 const axios = require('axios');
@@ -34,175 +33,72 @@ function rgbaToHex(r, g, b, a = 1) {
     const hex = Math.round(value * 255).toString(16);
     return hex.length === 1 ? '0' + hex : hex;
   };
-  
-  const hex = `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  return a < 1 ? `${hex}${toHex(a)}` : hex;
-}
-
-/**
- * Convert Figma RGBA to CSS rgba string
- */
-function rgbaToCss(r, g, b, a = 1) {
-  return `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${a})`;
-}
-
-/**
- * Parse style name to get category and variant
- * e.g., "Purple/100" -> { category: "purple", variant: "100" }
- */
-function parseStyleName(name) {
-  const parts = name.split('/').map(p => p.trim().toLowerCase().replace(/\s+/g, '-'));
-  if (parts.length === 2) {
-    return { category: parts[0], variant: parts[1] };
-  }
-  return { category: 'misc', variant: parts[0] };
-}
-
-/**
- * Extract color tokens from Figma file
- */
-async function fetchFigmaTokens() {
-  console.log('🎨 Fetching Figma file...');
-  
-  try {
-    const response = await figmaApi.get(`/files/${FIGMA_FILE_ID}`);
-    const file = response.data;
-    
-    console.log(`📁 File: ${file.name}`);
-    console.log(`📅 Last modified: ${file.lastModified}`);
-    
-    const tokens = {
-      colors: {},
-      typography: {},
-      spacing: {},
-      borderRadius: {},
-      shadows: {},
-    };
-    
-    // Extract styles from the file
-    const styles = file.styles || {};
-    
-    // Track style IDs to their properties
-    const styleMap = new Map();
-    
-    for (const [styleId, style] of Object.entries(styles)) {
-      styleMap.set(styleId, {
-        name: style.name,
-        type: style.styleType,
-      });
-    }
-    
-    // Traverse the document to find nodes with fills
-    function extractColorsFromNode(node, depth = 0) {
-      // Check if node has fills with colors
-      if (node.fills && Array.isArray(node.fills)) {
-        for (const fill of node.fills) {
-          if (fill.type === 'SOLID' && fill.color) {
-            const { r, g, b, a = 1 } = fill.color;
-            const hex = rgbaToHex(r, g, b, a);
-            
-            // Check if this node uses a style
-            if (node.styles && node.styles.fill) {
-              const styleInfo = styleMap.get(node.styles.fill);
-              if (styleInfo) {
-                const { category, variant } = parseStyleName(styleInfo.name);
-                if (!tokens.colors[category]) {
-                  tokens.colors[category] = {};
-                }
-                tokens.colors[category][variant] = hex;
-              }
-            }
-          }
-        }
-      }
-      
-      // Recursively process children
-      if (node.children) {
-        for (const child of node.children) {
-          extractColorsFromNode(child, depth + 1);
-        }
-      }
-    }
-    
-    // Process all pages
-    if (file.document && file.document.children) {
-      for (const page of file.document.children) {
-        extractColorsFromNode(page);
-      }
-    }
-    
-    // Extract colors from named color frames (Purple, Grey, etc.)
-    const colorFrames = extractColorFrames(file);
-    for (const [frameName, frameColors] of Object.entries(colorFrames)) {
-      tokens.colors[frameName] = { ...tokens.colors[frameName], ...frameColors };
-    }
-    
-    // Add default tokens if Figma doesn't have complete definitions
-    tokens.colors = ensureDefaultTokens(tokens.colors);
-    
-    return tokens;
-  } catch (error) {
-    console.error('❌ Error fetching Figma file:', error.message);
-    if (error.response) {
-      console.error('Response:', error.response.data);
-    }
-    throw error;
-  }
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
 }
 
 /**
  * Extract colors from named color frames (Purple, Grey, etc.)
- * Looks for frames that contain color swatches and extracts them
  */
 function extractColorFrames(file) {
   const colorFrames = {};
   
-  // Color frame names to look for (case-insensitive)
-  const colorFramePatterns = ['purple', 'grey', 'gray', 'blue', 'green', 'red', 'orange', 'yellow', 'pink', 'neutral'];
+  // Only look for the actual color frames in your design
+  const colorFramePatterns = ['purple', 'grey', 'gray'];
   
-  function findColorFrames(node, parentName = '') {
+  function findColorFrames(node) {
     const nodeName = node.name?.toLowerCase() || '';
     
     // Check if this is a color frame
-    const matchedPattern = colorFramePatterns.find(p => nodeName.includes(p));
+    const matchedPattern = colorFramePatterns.find(p => nodeName === p);
     
     if (matchedPattern && node.type === 'FRAME' && node.children) {
-      const colorName = matchedPattern === 'grey' ? 'gray' : matchedPattern;
+      // Normalize 'gray' to 'grey' for consistency
+      const colorName = matchedPattern === 'gray' ? 'grey' : matchedPattern;
       if (!colorFrames[colorName]) {
         colorFrames[colorName] = {};
       }
       
-      // Get all rectangles with solid fills, sorted by Y position
+      console.log(`\n🎨 Found color frame: "${node.name}"`);
+      
+      // Get only Rectangle shapes with solid fills (skip text labels and frames)
       const swatches = node.children
-        .filter(c => (c.type === 'RECTANGLE' || c.type === 'ELLIPSE' || c.type === 'FRAME') && c.fills && c.fills[0])
+        .filter(c => {
+          // Only rectangles named "Rectangle X" or "Frame X"
+          const isRectangle = c.type === 'RECTANGLE' || (c.type === 'FRAME' && c.name.toLowerCase().startsWith('frame'));
+          const hasFill = c.fills && c.fills[0] && c.fills[0].type === 'SOLID';
+          if (!isRectangle || !hasFill) return false;
+          
+          // Skip white colors (these are likely backgrounds/labels)
+          const { r, g, b } = c.fills[0].color;
+          const isWhite = r > 0.99 && g > 0.99 && b > 0.99;
+          return !isWhite;
+        })
         .sort((a, b) => {
-          const yA = a.absoluteBoundingBox?.y || 0;
-          const yB = b.absoluteBoundingBox?.y || 0;
-          return yA - yB;
+          // Sort by lightness (lightest first for 100-500 scale)
+          const getLightness = (fill) => {
+            const { r, g, b } = fill.color;
+            return (r + g + b) / 3;
+          };
+          return getLightness(b.fills[0]) - getLightness(a.fills[0]);
         });
       
-      // Assign scale values based on position (darkest typically at top)
-      const scaleValues = ['950', '900', '800', '700', '600', '500', '400', '300', '200', '100', '50'];
+      // Map to standard scale: 100 (lightest) to 500 (darkest)
+      const scaleValues = ['100', '200', '300', '400', '500', '600', '700'];
       
       swatches.forEach((swatch, index) => {
-        if (swatch.fills[0].type === 'SOLID' && swatch.fills[0].color) {
-          const { r, g, b, a = 1 } = swatch.fills[0].color;
-          const hex = rgbaToHex(r, g, b, a);
-          
-          // Try to extract scale from node name (e.g., "500", "Purple 500")
-          const nameMatch = swatch.name.match(/(\d+)/);
-          const scale = nameMatch ? nameMatch[1] : (index < scaleValues.length ? scaleValues[index] : `${(index + 1) * 100}`);
-          
-          colorFrames[colorName][scale] = hex;
-          console.log(`   🎨 ${colorName}-${scale}: ${hex} (from "${swatch.name}")`);
-        }
+        const { r, g, b, a = 1 } = swatch.fills[0].color;
+        const hex = rgbaToHex(r, g, b, a);
+        const scale = scaleValues[index] || `${(index + 1) * 100}`;
+        
+        colorFrames[colorName][scale] = hex;
+        console.log(`   ${colorName}-${scale}: ${hex} (from "${swatch.name}")`);
       });
     }
     
     // Recursively search children
     if (node.children) {
       for (const child of node.children) {
-        findColorFrames(child, node.name);
+        findColorFrames(child);
       }
     }
   }
@@ -215,72 +111,65 @@ function extractColorFrames(file) {
 }
 
 /**
- * Ensure we have default tokens if Figma doesn't have complete definitions
+ * Fetch tokens from Figma
  */
-function ensureDefaultTokens(colors) {
-  // Default grayscale if not extracted
-  if (!colors.gray || Object.keys(colors.gray).length < 5) {
-    colors.gray = {
-      '50': '#ffffff',
-      '100': '#e6e6e6',
-      '200': '#c4c4c4',
-      '300': '#8d8d8d',
-      '400': '#656565',
-      '500': '#1a1a1a',
-      '600': '#141414',
-      '700': '#0f0f0f',
-      '800': '#0a0a0a',
-      '900': '#050505',
-      '950': '#000000',
-    };
-  }
+async function fetchFigmaTokens() {
+  console.log('🎨 Fetching Figma file...');
   
-  // Default primary color (purple) if not extracted
-  if (!colors.primary) {
-    colors.primary = {
-      '50': '#faf5ff',
-      '100': '#f3e8ff',
-      '200': '#e9d5ff',
-      '300': '#d8b4fe',
-      '400': '#c084fc',
-      '500': '#a855f7',
-      '600': '#9333ea',
-      '700': '#7e22ce',
-      '800': '#6b21a8',
-      '900': '#581c87',
-      '950': '#3b0764',
-    };
+  try {
+    const response = await figmaApi.get(`/files/${FIGMA_FILE_ID}`);
+    const file = response.data;
+    
+    console.log(`📁 File: ${file.name}`);
+    console.log(`📅 Last modified: ${file.lastModified}`);
+    
+    // Extract colors from named frames
+    const colors = extractColorFrames(file);
+    
+    // Add white to grey palette as grey-100, shift others
+    if (colors.grey && !Object.values(colors.grey).includes('#FFFFFF')) {
+      const newGrey = { '100': '#FFFFFF' };
+      let scale = 200;
+      const sortedValues = Object.values(colors.grey).sort((a, b) => {
+        // Sort by lightness (lightest first)
+        const getLightness = (hex) => {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          return (r + g + b) / 3;
+        };
+        return getLightness(b) - getLightness(a);
+      });
+      for (const value of sortedValues) {
+        newGrey[String(scale)] = value;
+        scale += 100;
+      }
+      colors.grey = newGrey;
+    }
+    
+    // Map purple to primary (for semantic usage)
+    if (colors.purple) {
+      colors.primary = {
+        50: colors.purple['100'] || colors.purple['50'],
+        100: colors.purple['100'],
+        200: colors.purple['200'],
+        300: colors.purple['300'],
+        400: colors.purple['400'],
+        500: colors.purple['500'],
+        hover: colors.purple['400'],   // Lighter on hover (since base is dark)
+        active: colors.purple['300'],  // Even lighter on active
+      };
+    }
+    
+    return { colors };
+    
+  } catch (error) {
+    console.error('❌ Error fetching Figma file:', error.message);
+    if (error.response) {
+      console.error('Response:', error.response.data);
+    }
+    throw error;
   }
-  
-  // Semantic colors
-  if (!colors.success) {
-    colors.success = {
-      '50': '#f0fdf4',
-      '500': '#22c55e',
-      '600': '#16a34a',
-      '700': '#15803d',
-    };
-  }
-  
-  if (!colors.warning) {
-    colors.warning = {
-      '50': '#fffbeb',
-      '500': '#f59e0b',
-      '600': '#d97706',
-      '700': '#b45309',
-    };
-  }
-  
-  if (!colors.error) {
-    colors.error = {
-      '50': '#fef2f2',
-      '500': '#ef4444',
-      '600': '#dc2626',
-      '700': '#b91c1c',
-    };
-  }
-  
-  return colors;
 }
 
 /**
@@ -288,7 +177,7 @@ function ensureDefaultTokens(colors) {
  */
 function generateCssVariables(tokens) {
   let css = `/**
- * Design System Tokens
+ * Speck DS - Design System Tokens
  * Auto-generated from Figma - DO NOT EDIT MANUALLY
  * Last sync: ${new Date().toISOString()}
  */
@@ -296,7 +185,7 @@ function generateCssVariables(tokens) {
 :root {
 `;
 
-  // Colors
+  // Colors from Figma
   for (const [category, variants] of Object.entries(tokens.colors)) {
     css += `  /* ${category.charAt(0).toUpperCase() + category.slice(1)} */\n`;
     for (const [variant, value] of Object.entries(variants)) {
@@ -305,81 +194,59 @@ function generateCssVariables(tokens) {
     css += '\n';
   }
 
-  // Spacing
-  const spacing = {
-    '0': '0',
-    '1': '0.25rem',
-    '2': '0.5rem',
-    '3': '0.75rem',
-    '4': '1rem',
-    '5': '1.25rem',
-    '6': '1.5rem',
-    '8': '2rem',
-    '10': '2.5rem',
-    '12': '3rem',
-    '16': '4rem',
-  };
-  
-  css += '  /* Spacing */\n';
-  for (const [key, value] of Object.entries(spacing)) {
-    css += `  --spacing-${key}: ${value};\n`;
-  }
-  css += '\n';
+  // Spacing (from your Figma design)
+  css += `  /* Spacing */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 24px;
+  --spacing-6: 32px;
+  --spacing-7: 48px;
+  --spacing-8: 64px;
 
-  // Border Radius
-  const borderRadius = {
-    'none': '0',
-    'sm': '0.125rem',
-    'md': '0.375rem',
-    'lg': '0.5rem',
-    'xl': '0.75rem',
-    '2xl': '1rem',
-    'full': '9999px',
-  };
-  
-  css += '  /* Border Radius */\n';
-  for (const [key, value] of Object.entries(borderRadius)) {
-    css += `  --radius-${key}: ${value};\n`;
-  }
-  css += '\n';
+  /* Border Radius */
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 999px;
 
-  // Typography
-  const typography = {
-    'font-sans': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-    'font-mono': 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
-    'text-xs': '0.75rem',
-    'text-sm': '0.875rem',
-    'text-base': '1rem',
-    'text-lg': '1.125rem',
-    'text-xl': '1.25rem',
-    'text-2xl': '1.5rem',
-    'text-3xl': '1.875rem',
-    'font-normal': '400',
-    'font-medium': '500',
-    'font-semibold': '600',
-    'font-bold': '700',
-  };
-  
-  css += '  /* Typography */\n';
-  for (const [key, value] of Object.entries(typography)) {
-    css += `  --${key}: ${value};\n`;
-  }
-  css += '\n';
+  /* Typography - Fonts */
+  --font-serif: "Noe Display", Georgia, serif;
+  --font-sans: "Avenir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
-  // Shadows
-  const shadows = {
-    'sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-    'md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-    'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-    'xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-  };
-  
-  css += '  /* Shadows */\n';
-  for (const [key, value] of Object.entries(shadows)) {
-    css += `  --shadow-${key}: ${value};\n`;
-  }
+  /* Typography - Sizes */
+  --text-xs: 10px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: 30px;
+  --text-3xl: 36px;
 
-  css += '}\n';
+  /* Typography - Line Heights */
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* Typography - Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+`;
   
   return css;
 }
@@ -389,7 +256,7 @@ function generateCssVariables(tokens) {
  */
 function generateTypeScriptTokens(tokens) {
   return `/**
- * Design System Tokens
+ * Speck DS - Design System Tokens
  * Auto-generated from Figma - DO NOT EDIT MANUALLY
  * Last sync: ${new Date().toISOString()}
  */
@@ -397,42 +264,46 @@ function generateTypeScriptTokens(tokens) {
 export const colors = ${JSON.stringify(tokens.colors, null, 2)} as const;
 
 export const spacing = {
-  '0': '0',
-  '1': '0.25rem',
-  '2': '0.5rem',
-  '3': '0.75rem',
-  '4': '1rem',
-  '5': '1.25rem',
-  '6': '1.5rem',
-  '8': '2rem',
-  '10': '2.5rem',
-  '12': '3rem',
-  '16': '4rem',
+  1: '4px',
+  2: '8px',
+  3: '12px',
+  4: '16px',
+  5: '24px',
+  6: '32px',
+  7: '48px',
+  8: '64px',
 } as const;
 
 export const borderRadius = {
-  none: '0',
-  sm: '0.125rem',
-  md: '0.375rem',
-  lg: '0.5rem',
-  xl: '0.75rem',
-  '2xl': '1rem',
-  full: '9999px',
+  none: '0px',
+  xs: '2px',
+  sm: '4px',
+  md: '8px',
+  lg: '16px',
+  xl: '24px',
+  full: '999px',
 } as const;
 
 export const typography = {
   fontFamily: {
-    sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    serif: '"Noe Display", Georgia, serif',
+    sans: '"Avenir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
   },
   fontSize: {
-    xs: '0.75rem',
-    sm: '0.875rem',
-    base: '1rem',
-    lg: '1.125rem',
-    xl: '1.25rem',
-    '2xl': '1.5rem',
-    '3xl': '1.875rem',
+    xs: '10px',
+    sm: '12px',
+    base: '14px',
+    md: '16px',
+    lg: '18px',
+    xl: '24px',
+    '2xl': '30px',
+    '3xl': '36px',
+  },
+  lineHeight: {
+    tight: '1.2',
+    normal: '1.5',
+    relaxed: '1.75',
   },
   fontWeight: {
     normal: '400',
@@ -449,7 +320,10 @@ export const shadows = {
   xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
 } as const;
 
-export type ColorCategory = keyof typeof colors;
+// Type exports
+export type PurpleShade = keyof typeof colors.purple;
+export type GreyShade = keyof typeof colors.grey;
+export type PrimaryShade = keyof typeof colors.primary;
 export type SpacingKey = keyof typeof spacing;
 export type BorderRadiusKey = keyof typeof borderRadius;
 export type FontSize = keyof typeof typography.fontSize;
@@ -458,32 +332,29 @@ export type FontWeight = keyof typeof typography.fontWeight;
 }
 
 /**
- * Generate JSON tokens for Style Dictionary
+ * Generate JSON tokens
  */
 function generateJsonTokens(tokens) {
   return {
     color: tokens.colors,
     spacing: {
-      '0': { value: '0' },
-      '1': { value: '0.25rem' },
-      '2': { value: '0.5rem' },
-      '3': { value: '0.75rem' },
-      '4': { value: '1rem' },
-      '5': { value: '1.25rem' },
-      '6': { value: '1.5rem' },
-      '8': { value: '2rem' },
-      '10': { value: '2.5rem' },
-      '12': { value: '3rem' },
-      '16': { value: '4rem' },
+      1: { value: '4px' },
+      2: { value: '8px' },
+      3: { value: '12px' },
+      4: { value: '16px' },
+      5: { value: '24px' },
+      6: { value: '32px' },
+      7: { value: '48px' },
+      8: { value: '64px' },
     },
     borderRadius: {
-      none: { value: '0' },
-      sm: { value: '0.125rem' },
-      md: { value: '0.375rem' },
-      lg: { value: '0.5rem' },
-      xl: { value: '0.75rem' },
-      '2xl': { value: '1rem' },
-      full: { value: '9999px' },
+      none: { value: '0px' },
+      xs: { value: '2px' },
+      sm: { value: '4px' },
+      md: { value: '8px' },
+      lg: { value: '16px' },
+      xl: { value: '24px' },
+      full: { value: '999px' },
     },
   };
 }
@@ -492,7 +363,7 @@ function generateJsonTokens(tokens) {
  * Main execution
  */
 async function main() {
-  console.log('🚀 Starting Figma token sync...\n');
+  console.log('🚀 Starting Figma token sync for Speck DS...\n');
   
   try {
     const tokens = await fetchFigmaTokens();
@@ -521,7 +392,7 @@ async function main() {
     // Print summary
     console.log('\n📊 Token Summary:');
     for (const [category, variants] of Object.entries(tokens.colors)) {
-      console.log(`   - ${category}: ${Object.keys(variants).length} variants`);
+      console.log(`   - ${category}: ${Object.keys(variants).length} shades`);
     }
     
   } catch (error) {
