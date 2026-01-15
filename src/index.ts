@@ -1,3 +1,7 @@
+// Styles - auto-imported when you import from the design system
+import './styles/tokens.css';
+import './styles/helpers.css';
+
 // Components
 export { Button } from './components/Button';
 export type { ButtonProps, ButtonVariant, ButtonSize } from './components/Button';
@@ -7,6 +11,3 @@ export type { DropdownProps, DropdownOption, DropdownSize } from './components/D
 
 // Tokens
 export * from './tokens';
-
-// Styles - import this in your app to get CSS variables
-import './styles/tokens.css';

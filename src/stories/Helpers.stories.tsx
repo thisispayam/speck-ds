@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import '../../styles/tokens.css';
-import '../../styles/helpers.css';
+import '../styles/tokens.css';
+import '../styles/helpers.css';
 
 const meta: Meta = {
   title: 'Foundation/Helpers',
