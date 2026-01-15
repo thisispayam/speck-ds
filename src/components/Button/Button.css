@@ -51,9 +51,9 @@
 
 /* Variants */
 .ds-button--primary {
-  background-color: var(--color-primary-600);
+  background-color: var(--color-primary-500);
   color: white;
-  border-color: var(--color-primary-600);
+  border-color: var(--color-primary-500);
 }
 
 .ds-button--primary:hover:not(:disabled) {
@@ -67,28 +67,29 @@
 }
 
 .ds-button--secondary {
-  background-color: var(--color-grey-100);
-  color: var(--color-grey-900);
-  border-color: var(--color-grey-200);
-}
-
-.ds-button--secondary:hover:not(:disabled) {
   background-color: var(--color-grey-200);
+  color: var(--color-grey-700);
   border-color: var(--color-grey-300);
 }
 
-.ds-button--secondary:active:not(:disabled) {
+.ds-button--secondary:hover:not(:disabled) {
   background-color: var(--color-grey-300);
+  border-color: var(--color-grey-400);
+}
+
+.ds-button--secondary:active:not(:disabled) {
+  background-color: var(--color-grey-400);
 }
 
 .ds-button--outline {
   background-color: transparent;
-  color: var(--color-primary-600);
-  border-color: var(--color-primary-600);
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
 }
 
 .ds-button--outline:hover:not(:disabled) {
   background-color: var(--color-primary-50);
+  color: var(--color-primary-700);
 }
 
 .ds-button--outline:active:not(:disabled) {
@@ -102,12 +103,12 @@
 }
 
 .ds-button--ghost:hover:not(:disabled) {
-  background-color: var(--color-grey-100);
-  color: var(--color-grey-900);
+  background-color: var(--color-grey-200);
+  color: var(--color-grey-700);
 }
 
 .ds-button--ghost:active:not(:disabled) {
-  background-color: var(--color-grey-200);
+  background-color: var(--color-grey-300);
 }
 
 .ds-button--destructive {
