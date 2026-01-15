@@ -1,304 +1,213 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 import { Button } from './Button';
+import '../../styles/tokens.css';
+import '../../styles/showcase.css';
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',
   component: Button,
-  parameters: {
-    layout: 'centered',
-  },
+  parameters: { layout: 'centered' },
   tags: ['autodocs'],
   argTypes: {
     variant: {
       control: 'select',
       options: ['primary', 'secondary', 'outline', 'ghost', 'destructive'],
-      description: 'The visual style variant of the button',
     },
     size: {
       control: 'select',
       options: ['sm', 'md', 'lg'],
-      description: 'The size of the button',
     },
-    fullWidth: {
-      control: 'boolean',
-      description: 'Whether the button should take full width',
-    },
-    loading: {
-      control: 'boolean',
-      description: 'Whether the button is in a loading state',
-    },
-    disabled: {
-      control: 'boolean',
-      description: 'Whether the button is disabled',
-    },
+    fullWidth: { control: 'boolean' },
+    loading: { control: 'boolean' },
+    disabled: { control: 'boolean' },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof Button>;
 
-// Primary button - default
-export const Primary: Story = {
-  args: {
-    children: 'Button',
-    variant: 'primary',
-  },
-};
-
-// Secondary button
-export const Secondary: Story = {
-  args: {
-    children: 'Button',
-    variant: 'secondary',
-  },
-};
-
-// Outline button
-export const Outline: Story = {
-  args: {
-    children: 'Button',
-    variant: 'outline',
-  },
-};
-
-// Ghost button
-export const Ghost: Story = {
-  args: {
-    children: 'Button',
-    variant: 'ghost',
-  },
-};
-
-// Destructive button
-export const Destructive: Story = {
-  args: {
-    children: 'Delete',
-    variant: 'destructive',
-  },
-};
-
-// Sizes
-export const Small: Story = {
-  args: {
-    children: 'Small Button',
-    size: 'sm',
-  },
-};
-
-export const Medium: Story = {
-  args: {
-    children: 'Medium Button',
-    size: 'md',
-  },
-};
-
-export const Large: Story = {
-  args: {
-    children: 'Large Button',
-    size: 'lg',
-  },
-};
-
-// States
-export const Loading: Story = {
-  args: {
-    children: 'Loading...',
-    loading: true,
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    children: 'Disabled',
-    disabled: true,
-  },
-};
-
-// Full Width
-export const FullWidth: Story = {
-  args: {
-    children: 'Full Width Button',
-    fullWidth: true,
-  },
-  parameters: {
-    layout: 'padded',
-  },
-};
-
-// With Icons
+// Icons
 const ArrowIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
     <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 const PlusIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
     <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
+// Individual Stories
+export const Primary: Story = {
+  args: { children: 'Button', variant: 'primary' },
+};
+
+export const Secondary: Story = {
+  args: { children: 'Button', variant: 'secondary' },
+};
+
+export const Outline: Story = {
+  args: { children: 'Button', variant: 'outline' },
+};
+
+export const Ghost: Story = {
+  args: { children: 'Button', variant: 'ghost' },
+};
+
+export const Destructive: Story = {
+  args: { children: 'Delete', variant: 'destructive' },
+};
+
+export const Small: Story = {
+  args: { children: 'Small', size: 'sm' },
+};
+
+export const Medium: Story = {
+  args: { children: 'Medium', size: 'md' },
+};
+
+export const Large: Story = {
+  args: { children: 'Large', size: 'lg' },
+};
+
+export const Loading: Story = {
+  args: { children: 'Loading...', loading: true },
+};
+
+export const Disabled: Story = {
+  args: { children: 'Disabled', disabled: true },
+};
+
+export const FullWidth: Story = {
+  args: { children: 'Full Width Button', fullWidth: true },
+  parameters: { layout: 'padded' },
+};
+
 export const WithLeftIcon: Story = {
-  args: {
-    children: 'Add Item',
-    leftIcon: <PlusIcon />,
-  },
+  args: { children: 'Add Item', leftIcon: <PlusIcon /> },
 };
 
 export const WithRightIcon: Story = {
-  args: {
-    children: 'Continue',
-    rightIcon: <ArrowIcon />,
-  },
-};
-
-export const WithBothIcons: Story = {
-  args: {
-    children: 'Next Step',
-    leftIcon: <PlusIcon />,
-    rightIcon: <ArrowIcon />,
-  },
+  args: { children: 'Continue', rightIcon: <ArrowIcon /> },
 };
 
 // All Variants
 export const AllVariants: Story = {
+  parameters: { layout: 'padded' },
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* All Button Variants */}
-      <div>
-        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>Button Variants</h3>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+    <div className="showcase">
+      <section className="section">
+        <h3 className="section-subtitle">Variants</h3>
+        <div className="flex flex-wrap gap-3">
           <Button variant="primary">Primary</Button>
           <Button variant="secondary">Secondary</Button>
           <Button variant="outline">Outline</Button>
           <Button variant="ghost">Ghost</Button>
           <Button variant="destructive">Destructive</Button>
         </div>
-      </div>
+      </section>
 
-      {/* All Sizes */}
-      <div>
-        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>Sizes</h3>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <Button variant="primary" size="sm">Small</Button>
-          <Button variant="primary" size="md">Medium</Button>
-          <Button variant="primary" size="lg">Large</Button>
+      <section className="section">
+        <h3 className="section-subtitle">Sizes</h3>
+        <div className="flex gap-3" style={{ alignItems: 'center' }}>
+          <Button size="sm">Small</Button>
+          <Button size="md">Medium</Button>
+          <Button size="lg">Large</Button>
         </div>
-      </div>
+      </section>
 
-      {/* States */}
-      <div>
-        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>States</h3>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <Button variant="primary">Default</Button>
-          <Button variant="primary" disabled>Disabled</Button>
-          <Button variant="primary" loading>Loading</Button>
+      <section className="section">
+        <h3 className="section-subtitle">States</h3>
+        <div className="flex flex-wrap gap-3">
+          <Button>Default</Button>
+          <Button disabled>Disabled</Button>
+          <Button loading>Loading</Button>
         </div>
-      </div>
+      </section>
 
-      {/* With Icons */}
-      <div>
-        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>With Icons</h3>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <Button variant="primary" leftIcon={<PlusIcon />}>Add Item</Button>
-          <Button variant="primary" rightIcon={<ArrowIcon />}>Continue</Button>
+      <section className="section">
+        <h3 className="section-subtitle">With Icons</h3>
+        <div className="flex flex-wrap gap-3">
+          <Button leftIcon={<PlusIcon />}>Add Item</Button>
+          <Button rightIcon={<ArrowIcon />}>Continue</Button>
           <Button variant="outline" leftIcon={<PlusIcon />}>Add</Button>
           <Button variant="ghost" leftIcon={<PlusIcon />}>Add</Button>
         </div>
-      </div>
+      </section>
 
-      {/* All Variants in All Sizes */}
-      <div>
-        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>All Variants × Sizes</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Button variant="primary" size="sm">Primary SM</Button>
-            <Button variant="primary" size="md">Primary MD</Button>
-            <Button variant="primary" size="lg">Primary LG</Button>
-          </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Button variant="secondary" size="sm">Secondary SM</Button>
-            <Button variant="secondary" size="md">Secondary MD</Button>
-            <Button variant="secondary" size="lg">Secondary LG</Button>
-          </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Button variant="outline" size="sm">Outline SM</Button>
-            <Button variant="outline" size="md">Outline MD</Button>
-            <Button variant="outline" size="lg">Outline LG</Button>
-          </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Button variant="ghost" size="sm">Ghost SM</Button>
-            <Button variant="ghost" size="md">Ghost MD</Button>
-            <Button variant="ghost" size="lg">Ghost LG</Button>
-          </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Button variant="destructive" size="sm">Delete SM</Button>
-            <Button variant="destructive" size="md">Delete MD</Button>
-            <Button variant="destructive" size="lg">Delete LG</Button>
-          </div>
+      <section className="section">
+        <h3 className="section-subtitle">All Variants × Sizes</h3>
+        <div className="flex flex-col gap-3">
+          {(['primary', 'secondary', 'outline', 'ghost', 'destructive'] as const).map(variant => (
+            <div key={variant} className="flex gap-3" style={{ alignItems: 'center' }}>
+              <Button variant={variant} size="sm">{variant} SM</Button>
+              <Button variant={variant} size="md">{variant} MD</Button>
+              <Button variant={variant} size="lg">{variant} LG</Button>
+            </div>
+          ))}
         </div>
-      </div>
+      </section>
     </div>
   ),
-  parameters: {
-    layout: 'padded',
-  },
 };
 
-// Color Showcase - Purple Theme
+// Color Showcase
 export const ColorShowcase: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', padding: '24px' }}>
-      {/* Purple Color Palette Preview */}
-      <div>
-        <h2 style={{ margin: '0 0 16px 0', fontFamily: 'var(--font-sans)', fontSize: '18px', fontWeight: 600 }}>Speck DS Color Palette</h2>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-100)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#1F035B' }}>100</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-200)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#fff' }}>200</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-300)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#1F035B' }}>300</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-400)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#fff' }}>400</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-500)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#fff' }}>500</span>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-100)', borderRadius: '8px', border: '1px solid #E5E5E5', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#656565' }}>100</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-200)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#656565' }}>200</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-300)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#656565' }}>300</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-400)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#fff' }}>400</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-500)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#fff' }}>500</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-600)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#fff' }}>600</span>
-          </div>
-          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-700)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
-            <span style={{ fontSize: '10px', color: '#fff' }}>700</span>
-          </div>
-        </div>
-      </div>
+    <div className="showcase" style={{ padding: '24px' }}>
+      <header className="showcase-header">
+        <h1 className="showcase-title">Speck DS Color Palette</h1>
+        <p className="showcase-description">Button variants on different backgrounds</p>
+      </header>
 
-      {/* Buttons on different backgrounds */}
-      <div>
-        <h3 style={{ margin: '0 0 16px 0', fontFamily: 'var(--font-sans)', fontSize: '16px', fontWeight: 500 }}>Buttons on Light Background</h3>
-        <div style={{ padding: '24px', background: '#ffffff', borderRadius: '12px', border: '1px solid #E5E5E5' }}>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+      {/* Color Swatches */}
+      <section className="section">
+        <h3 className="section-subtitle">Purple</h3>
+        <div className="flex gap-2 mb-4">
+          {['100', '200', '300', '400', '500'].map(shade => (
+            <div key={shade} className="flex flex-col" style={{ alignItems: 'center' }}>
+              <div 
+                className="swatch-mini" 
+                style={{ 
+                  width: '60px', 
+                  height: '60px', 
+                  backgroundColor: `var(--color-purple-${shade})`,
+                  borderRadius: '8px',
+                }} 
+              />
+              <span className="text-sm text-muted">{shade}</span>
+            </div>
+          ))}
+        </div>
+
+        <h3 className="section-subtitle">Grey</h3>
+        <div className="flex gap-2 mb-5">
+          {['100', '200', '300', '400', '500', '600', '700'].map(shade => (
+            <div key={shade} className="flex flex-col" style={{ alignItems: 'center' }}>
+              <div 
+                style={{ 
+                  width: '60px', 
+                  height: '60px', 
+                  backgroundColor: `var(--color-grey-${shade})`,
+                  borderRadius: '8px',
+                  border: shade === '100' ? '1px solid var(--color-grey-300)' : 'none',
+                }} 
+              />
+              <span className="text-sm text-muted">{shade}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Buttons on Light */}
+      <section className="section">
+        <h3 className="section-subtitle">Buttons on Light Background</h3>
+        <div className="card card-light">
+          <div className="flex flex-wrap gap-3">
             <Button variant="primary">Primary</Button>
             <Button variant="secondary">Secondary</Button>
             <Button variant="outline">Outline</Button>
@@ -306,12 +215,13 @@ export const ColorShowcase: Story = {
             <Button variant="destructive">Destructive</Button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div>
-        <h3 style={{ margin: '0 0 16px 0', fontFamily: 'var(--font-sans)', fontSize: '16px', fontWeight: 500 }}>Buttons on Grey Background</h3>
-        <div style={{ padding: '24px', background: 'var(--color-grey-200)', borderRadius: '12px' }}>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+      {/* Buttons on Grey */}
+      <section className="section">
+        <h3 className="section-subtitle">Buttons on Grey Background</h3>
+        <div className="card">
+          <div className="flex flex-wrap gap-3">
             <Button variant="primary">Primary</Button>
             <Button variant="secondary">Secondary</Button>
             <Button variant="outline">Outline</Button>
@@ -319,12 +229,13 @@ export const ColorShowcase: Story = {
             <Button variant="destructive">Destructive</Button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div>
-        <h3 style={{ margin: '0 0 16px 0', fontFamily: 'var(--font-sans)', fontSize: '16px', fontWeight: 500, color: '#fff' }}>Buttons on Dark Background</h3>
-        <div style={{ padding: '24px', background: 'var(--color-grey-700)', borderRadius: '12px' }}>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+      {/* Buttons on Dark */}
+      <section className="section">
+        <h3 className="section-subtitle" style={{ color: 'var(--color-grey-100)' }}>Buttons on Dark Background</h3>
+        <div className="card card-dark">
+          <div className="flex flex-wrap gap-3">
             <Button variant="primary">Primary</Button>
             <Button variant="secondary">Secondary</Button>
             <Button variant="outline">Outline</Button>
@@ -332,11 +243,7 @@ export const ColorShowcase: Story = {
             <Button variant="destructive">Destructive</Button>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   ),
-  parameters: {
-    layout: 'fullscreen',
-    backgrounds: { default: 'light' },
-  },
 };
