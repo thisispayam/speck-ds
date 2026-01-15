@@ -1,7 +1,7 @@
 /**
  * Speck DS - Design System Tokens
- * Auto-generated from Figma - DO NOT EDIT MANUALLY
- * Last sync: 2026-01-15T21:14:21.801Z
+ * Auto-generated from Figma
+ * Last sync: 2026-01-15T22:19:26.965Z
  */
 
 export const colors = {
@@ -34,53 +34,49 @@ export const colors = {
 } as const;
 
 export const spacing = {
-  1: '4px',
-  2: '8px',
-  3: '12px',
-  4: '16px',
-  5: '24px',
-  6: '32px',
-  7: '48px',
-  8: '64px',
+  "1": 4,
+  "2": 8,
+  "3": 12,
+  "4": 16,
+  "5": 24,
+  "6": 32,
+  "7": 48,
+  "8": 64
 } as const;
 
 export const borderRadius = {
-  none: '0px',
-  xs: '2px',
-  sm: '4px',
-  md: '8px',
-  lg: '16px',
-  xl: '24px',
-  full: '999px',
+  "none": 0,
+  "sm": 8,
+  "md": 16,
+  "lg": 24,
+  "full": 999
 } as const;
 
 export const typography = {
   fontFamily: {
-    serif: '"Noe Display", Georgia, serif',
-    sans: '"Avenir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
-  },
+    "serif": "\"Noe Display\", Merriweather, Georgia, serif",
+    "sans": "\"Avenir\", \"Helvetica Neue\", sans-serif"
+},
   fontSize: {
-    xs: '10px',
-    sm: '12px',
-    base: '14px',
-    md: '16px',
-    lg: '18px',
-    xl: '24px',
-    '2xl': '30px',
-    '3xl': '36px',
-  },
-  lineHeight: {
-    tight: '1.2',
-    normal: '1.5',
-    relaxed: '1.75',
-  },
+    "xs": 10,
+    "sm": 14,
+    "md": 16,
+    "lg": 20,
+    "xl": 24,
+    "2xl": 36
+},
   fontWeight: {
-    normal: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
-  },
+    "400": 400,
+    "500": 500,
+    "600": 600,
+    "700": 700
+},
+  lineHeight: {
+    "tight": 1.15,
+    "standard": 1.35,
+    "relaxed": 1.6,
+    "reader": 1.75
+},
 } as const;
 
 export const shadows = {
@@ -98,3 +94,4 @@ export type SpacingKey = keyof typeof spacing;
 export type BorderRadiusKey = keyof typeof borderRadius;
 export type FontSize = keyof typeof typography.fontSize;
 export type FontWeight = keyof typeof typography.fontWeight;
+export type LineHeight = keyof typeof typography.lineHeight;
