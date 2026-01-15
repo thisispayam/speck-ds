@@ -57,13 +57,13 @@
 }
 
 .ds-button--primary:hover:not(:disabled) {
-  background-color: var(--color-primary-700);
-  border-color: var(--color-primary-700);
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .ds-button--primary:active:not(:disabled) {
-  background-color: var(--color-primary-800);
-  border-color: var(--color-primary-800);
+  background-color: var(--color-primary-active);
+  border-color: var(--color-primary-active);
 }
 
 .ds-button--secondary {
@@ -89,7 +89,8 @@
 
 .ds-button--outline:hover:not(:disabled) {
   background-color: var(--color-primary-50);
-  color: var(--color-primary-700);
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .ds-button--outline:active:not(:disabled) {
