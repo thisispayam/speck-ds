@@ -1,102 +1,98 @@
 /**
- * Design System Tokens
- * Auto-generated from Figma - DO NOT EDIT MANUALLY
- * Last sync: 2026-01-15T08:27:04.095Z
+ * Speck DS - Design System Tokens
+ * Source: Figma Design System
+ * Last sync: 2026-01-15
  */
 
 export const colors = {
-  "purple": {
-    "500": "#1f035b"
+  purple: {
+    '100': '#ECE6F8',
+    '200': '#8B6AD3',
+    '300': '#C5B4E9',
+    '400': '#3E06B6',
+    '500': '#1F035B',
   },
-  "gray": {
-    "50": "#ffffff",
-    "100": "#e6e6e6",
-    "200": "#c4c4c4",
-    "300": "#8d8d8d",
-    "400": "#656565",
-    "500": "#1a1a1a",
-    "600": "#141414",
-    "700": "#0f0f0f",
-    "800": "#0a0a0a",
-    "900": "#050505",
-    "950": "#000000"
+  grey: {
+    '100': '#ffffff',
+    '200': '#E5E5E5',
+    '300': '#C4C4C4',
+    '400': '#8D8D8D',
+    '500': '#656565',
+    '600': '#1A1A1A',
+    '700': '#000000',
   },
-  "primary": {
-    "50": "#faf5ff",
-    "100": "#f3e8ff",
-    "200": "#e9d5ff",
-    "300": "#d8b4fe",
-    "400": "#c084fc",
-    "500": "#a855f7",
-    "600": "#9333ea",
-    "700": "#7e22ce",
-    "800": "#6b21a8",
-    "900": "#581c87",
-    "950": "#3b0764"
+  primary: {
+    '50': '#ECE6F8',
+    '100': '#C5B4E9',
+    '200': '#8B6AD3',
+    '300': '#3E06B6',
+    '400': '#1F035B',
+    '500': '#1F035B',
+    '600': '#1F035B',
   },
-  "success": {
-    "50": "#f0fdf4",
-    "500": "#22c55e",
-    "600": "#16a34a",
-    "700": "#15803d"
+  success: {
+    '50': '#f0fdf4',
+    '500': '#22c55e',
+    '600': '#16a34a',
+    '700': '#15803d',
   },
-  "warning": {
-    "50": "#fffbeb",
-    "500": "#f59e0b",
-    "600": "#d97706",
-    "700": "#b45309"
+  warning: {
+    '50': '#fffbeb',
+    '500': '#f59e0b',
+    '600': '#d97706',
+    '700': '#b45309',
   },
-  "error": {
-    "50": "#fef2f2",
-    "500": "#ef4444",
-    "600": "#dc2626",
-    "700": "#b91c1c"
-  }
+  error: {
+    '50': '#fef2f2',
+    '500': '#ef4444',
+    '600': '#dc2626',
+    '700': '#b91c1c',
+  },
 } as const;
 
 export const spacing = {
-  '0': '0',
-  '1': '0.25rem',
-  '2': '0.5rem',
-  '3': '0.75rem',
-  '4': '1rem',
-  '5': '1.25rem',
-  '6': '1.5rem',
-  '8': '2rem',
-  '10': '2.5rem',
-  '12': '3rem',
-  '16': '4rem',
+  '1': '4px',
+  '2': '8px',
+  '3': '12px',
+  '4': '16px',
+  '5': '24px',
+  '6': '32px',
+  '7': '48px',
+  '8': '64px',
 } as const;
 
 export const borderRadius = {
-  none: '0',
-  sm: '0.125rem',
-  md: '0.375rem',
-  lg: '0.5rem',
-  xl: '0.75rem',
-  '2xl': '1rem',
-  full: '9999px',
+  none: '0px',
+  sm: '8px',
+  md: '16px',
+  lg: '24px',
+  full: '999px',
 } as const;
 
 export const typography = {
   fontFamily: {
-    sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-    mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
+    serif: '"Noe Display", Merriweather, Georgia, serif',
+    sans: 'Avenir, "Helvetica Neue", sans-serif',
   },
   fontSize: {
-    xs: '0.75rem',
-    sm: '0.875rem',
-    base: '1rem',
-    lg: '1.125rem',
-    xl: '1.25rem',
-    '2xl': '1.5rem',
-    '3xl': '1.875rem',
+    xs: '10px',
+    sm: '14px',
+    md: '16px',
+    lg: '20px',
+    xl: '24px',
+    '2xl': '36px',
   },
   fontWeight: {
     normal: '400',
     medium: '500',
     semibold: '600',
     bold: '700',
+  },
+  lineHeight: {
+    tight: '1.15',
+    standard: '1.35',
+    relaxed: '1.6',
+    reader: '1.75',
   },
 } as const;
 
@@ -112,3 +108,4 @@ export type SpacingKey = keyof typeof spacing;
 export type BorderRadiusKey = keyof typeof borderRadius;
 export type FontSize = keyof typeof typography.fontSize;
 export type FontWeight = keyof typeof typography.fontWeight;
+export type LineHeight = keyof typeof typography.lineHeight;
