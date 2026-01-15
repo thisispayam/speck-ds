@@ -1,7 +1,7 @@
 {
-  "name": "@thisispayam/design-system",
+  "name": "@thisispayam/speck-ds",
   "version": "1.0.0",
-  "description": "A tokenized React design system connected to Figma",
+  "description": "Speck DS - A tokenized React design system connected to Figma",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -41,9 +41,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/thisispayam/design-system.git"
+    "url": "https://github.com/thisispayam/speck-ds.git"
   },
-  "homepage": "https://thisispayam.github.io/design-system",
+  "homepage": "https://thisispayam.github.io/speck-ds",
   "dependencies": {
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",

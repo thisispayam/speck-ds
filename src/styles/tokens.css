@@ -1,10 +1,13 @@
 /**
  * Design System Tokens
  * Auto-generated from Figma - DO NOT EDIT MANUALLY
- * Last sync: 2026-01-15T08:14:18.766Z
+ * Last sync: 2026-01-15T08:26:12.550Z
  */
 
 :root {
+  /* Purple */
+  --color-purple-500: #1f035b;
+
   /* Gray */
   --color-gray-50: #ffffff;
   --color-gray-100: #e6e6e6;

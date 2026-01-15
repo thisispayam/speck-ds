@@ -1,4 +1,4 @@
-# Design System
+# Speck DS
 
 A tokenized React design system connected to Figma. Design changes in Figma are automatically synced to code tokens.
 
