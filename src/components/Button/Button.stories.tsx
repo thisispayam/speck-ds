@@ -163,24 +163,180 @@ export const WithBothIcons: Story = {
 // All Variants
 export const AllVariants: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-        <Button variant="primary">Primary</Button>
-        <Button variant="secondary">Secondary</Button>
-        <Button variant="outline">Outline</Button>
-        <Button variant="ghost">Ghost</Button>
-        <Button variant="destructive">Destructive</Button>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* All Button Variants */}
+      <div>
+        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>Button Variants</h3>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <Button variant="primary">Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="outline">Outline</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="destructive">Destructive</Button>
+        </div>
       </div>
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-        <Button variant="primary" size="sm">Small</Button>
-        <Button variant="primary" size="md">Medium</Button>
-        <Button variant="primary" size="lg">Large</Button>
+
+      {/* All Sizes */}
+      <div>
+        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>Sizes</h3>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <Button variant="primary" size="sm">Small</Button>
+          <Button variant="primary" size="md">Medium</Button>
+          <Button variant="primary" size="lg">Large</Button>
+        </div>
       </div>
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-        <Button variant="primary" loading>Loading</Button>
-        <Button variant="primary" disabled>Disabled</Button>
-        <Button variant="primary" leftIcon={<PlusIcon />}>With Icon</Button>
+
+      {/* States */}
+      <div>
+        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>States</h3>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <Button variant="primary">Default</Button>
+          <Button variant="primary" disabled>Disabled</Button>
+          <Button variant="primary" loading>Loading</Button>
+        </div>
+      </div>
+
+      {/* With Icons */}
+      <div>
+        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>With Icons</h3>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <Button variant="primary" leftIcon={<PlusIcon />}>Add Item</Button>
+          <Button variant="primary" rightIcon={<ArrowIcon />}>Continue</Button>
+          <Button variant="outline" leftIcon={<PlusIcon />}>Add</Button>
+          <Button variant="ghost" leftIcon={<PlusIcon />}>Add</Button>
+        </div>
+      </div>
+
+      {/* All Variants in All Sizes */}
+      <div>
+        <h3 style={{ margin: '0 0 12px 0', fontFamily: 'var(--font-sans)', fontSize: '14px', color: '#656565' }}>All Variants × Sizes</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Button variant="primary" size="sm">Primary SM</Button>
+            <Button variant="primary" size="md">Primary MD</Button>
+            <Button variant="primary" size="lg">Primary LG</Button>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Button variant="secondary" size="sm">Secondary SM</Button>
+            <Button variant="secondary" size="md">Secondary MD</Button>
+            <Button variant="secondary" size="lg">Secondary LG</Button>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Button variant="outline" size="sm">Outline SM</Button>
+            <Button variant="outline" size="md">Outline MD</Button>
+            <Button variant="outline" size="lg">Outline LG</Button>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Button variant="ghost" size="sm">Ghost SM</Button>
+            <Button variant="ghost" size="md">Ghost MD</Button>
+            <Button variant="ghost" size="lg">Ghost LG</Button>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <Button variant="destructive" size="sm">Delete SM</Button>
+            <Button variant="destructive" size="md">Delete MD</Button>
+            <Button variant="destructive" size="lg">Delete LG</Button>
+          </div>
+        </div>
       </div>
     </div>
   ),
+  parameters: {
+    layout: 'padded',
+  },
+};
+
+// Color Showcase - Purple Theme
+export const ColorShowcase: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', padding: '24px' }}>
+      {/* Purple Color Palette Preview */}
+      <div>
+        <h2 style={{ margin: '0 0 16px 0', fontFamily: 'var(--font-sans)', fontSize: '18px', fontWeight: 600 }}>Speck DS Color Palette</h2>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-100)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#1F035B' }}>100</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-200)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#fff' }}>200</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-300)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#1F035B' }}>300</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-400)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#fff' }}>400</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-purple-500)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#fff' }}>500</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-100)', borderRadius: '8px', border: '1px solid #E5E5E5', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#656565' }}>100</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-200)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#656565' }}>200</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-300)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#656565' }}>300</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-400)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#fff' }}>400</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-500)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#fff' }}>500</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-600)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#fff' }}>600</span>
+          </div>
+          <div style={{ width: '60px', height: '60px', background: 'var(--color-grey-700)', borderRadius: '8px', display: 'flex', alignItems: 'flex-end', padding: '4px' }}>
+            <span style={{ fontSize: '10px', color: '#fff' }}>700</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Buttons on different backgrounds */}
+      <div>
+        <h3 style={{ margin: '0 0 16px 0', fontFamily: 'var(--font-sans)', fontSize: '16px', fontWeight: 500 }}>Buttons on Light Background</h3>
+        <div style={{ padding: '24px', background: '#ffffff', borderRadius: '12px', border: '1px solid #E5E5E5' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <Button variant="primary">Primary</Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="outline">Outline</Button>
+            <Button variant="ghost">Ghost</Button>
+            <Button variant="destructive">Destructive</Button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ margin: '0 0 16px 0', fontFamily: 'var(--font-sans)', fontSize: '16px', fontWeight: 500 }}>Buttons on Grey Background</h3>
+        <div style={{ padding: '24px', background: 'var(--color-grey-200)', borderRadius: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <Button variant="primary">Primary</Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="outline">Outline</Button>
+            <Button variant="ghost">Ghost</Button>
+            <Button variant="destructive">Destructive</Button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ margin: '0 0 16px 0', fontFamily: 'var(--font-sans)', fontSize: '16px', fontWeight: 500, color: '#fff' }}>Buttons on Dark Background</h3>
+        <div style={{ padding: '24px', background: 'var(--color-grey-700)', borderRadius: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <Button variant="primary">Primary</Button>
+            <Button variant="secondary">Secondary</Button>
+            <Button variant="outline">Outline</Button>
+            <Button variant="ghost">Ghost</Button>
+            <Button variant="destructive">Destructive</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: {
+    layout: 'fullscreen',
+    backgrounds: { default: 'light' },
+  },
 };
