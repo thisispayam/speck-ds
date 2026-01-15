@@ -1,7 +1,7 @@
 /**
  * Design System Tokens
  * Auto-generated from Figma - DO NOT EDIT MANUALLY
- * Last sync: 2026-01-15T08:26:12.552Z
+ * Last sync: 2026-01-15T08:27:04.095Z
  */
 
 export const colors = {

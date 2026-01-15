@@ -131,10 +131,10 @@ async function fetchFigmaTokens() {
       }
     }
     
-    // Also extract colors from Frame 2 (grayscale palette) by position
-    const grayscaleColors = await extractGrayscalePalette(file);
-    if (Object.keys(grayscaleColors).length > 0) {
-      tokens.colors.gray = grayscaleColors;
+    // Extract colors from named color frames (Purple, Grey, etc.)
+    const colorFrames = extractColorFrames(file);
+    for (const [frameName, frameColors] of Object.entries(colorFrames)) {
+      tokens.colors[frameName] = { ...tokens.colors[frameName], ...frameColors };
     }
     
     // Add default tokens if Figma doesn't have complete definitions
@@ -151,45 +151,67 @@ async function fetchFigmaTokens() {
 }
 
 /**
- * Extract grayscale palette from Frame 2
+ * Extract colors from named color frames (Purple, Grey, etc.)
+ * Looks for frames that contain color swatches and extracts them
  */
-async function extractGrayscalePalette(file) {
-  const grays = {};
+function extractColorFrames(file) {
+  const colorFrames = {};
   
-  // Find Frame 2 in the document
-  function findFrame2(node) {
-    if (node.name === 'Frame 2' && node.type === 'FRAME') {
-      return node;
+  // Color frame names to look for (case-insensitive)
+  const colorFramePatterns = ['purple', 'grey', 'gray', 'blue', 'green', 'red', 'orange', 'yellow', 'pink', 'neutral'];
+  
+  function findColorFrames(node, parentName = '') {
+    const nodeName = node.name?.toLowerCase() || '';
+    
+    // Check if this is a color frame
+    const matchedPattern = colorFramePatterns.find(p => nodeName.includes(p));
+    
+    if (matchedPattern && node.type === 'FRAME' && node.children) {
+      const colorName = matchedPattern === 'grey' ? 'gray' : matchedPattern;
+      if (!colorFrames[colorName]) {
+        colorFrames[colorName] = {};
+      }
+      
+      // Get all rectangles with solid fills, sorted by Y position
+      const swatches = node.children
+        .filter(c => (c.type === 'RECTANGLE' || c.type === 'ELLIPSE' || c.type === 'FRAME') && c.fills && c.fills[0])
+        .sort((a, b) => {
+          const yA = a.absoluteBoundingBox?.y || 0;
+          const yB = b.absoluteBoundingBox?.y || 0;
+          return yA - yB;
+        });
+      
+      // Assign scale values based on position (darkest typically at top)
+      const scaleValues = ['950', '900', '800', '700', '600', '500', '400', '300', '200', '100', '50'];
+      
+      swatches.forEach((swatch, index) => {
+        if (swatch.fills[0].type === 'SOLID' && swatch.fills[0].color) {
+          const { r, g, b, a = 1 } = swatch.fills[0].color;
+          const hex = rgbaToHex(r, g, b, a);
+          
+          // Try to extract scale from node name (e.g., "500", "Purple 500")
+          const nameMatch = swatch.name.match(/(\d+)/);
+          const scale = nameMatch ? nameMatch[1] : (index < scaleValues.length ? scaleValues[index] : `${(index + 1) * 100}`);
+          
+          colorFrames[colorName][scale] = hex;
+          console.log(`   🎨 ${colorName}-${scale}: ${hex} (from "${swatch.name}")`);
+        }
+      });
     }
+    
+    // Recursively search children
     if (node.children) {
       for (const child of node.children) {
-        const found = findFrame2(child);
-        if (found) return found;
+        findColorFrames(child, node.name);
       }
     }
-    return null;
   }
   
-  const frame2 = file.document ? findFrame2(file.document) : null;
-  
-  if (frame2 && frame2.children) {
-    // Sort children by Y position to get correct order (darkest at top)
-    const sortedChildren = [...frame2.children]
-      .filter(c => c.type === 'RECTANGLE' && c.fills && c.fills[0])
-      .sort((a, b) => a.absoluteBoundingBox.y - b.absoluteBoundingBox.y);
-    
-    // Map to grayscale scale (50-900)
-    const grayScale = ['950', '900', '800', '700', '600', '500', '400', '300', '200', '100', '50'];
-    
-    sortedChildren.forEach((child, index) => {
-      if (child.fills[0].color && index < grayScale.length) {
-        const { r, g, b, a = 1 } = child.fills[0].color;
-        grays[grayScale[index]] = rgbaToHex(r, g, b, a);
-      }
-    });
+  if (file.document) {
+    findColorFrames(file.document);
   }
   
-  return grays;
+  return colorFrames;
 }
 
 /**
