@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from './Button';
 import '../../styles/tokens.css';
 import '../../styles/showcase.css';
+import '../../styles/helpers.css';
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',
@@ -112,7 +113,7 @@ export const AllVariants: Story = {
 
       <section className="section">
         <h3 className="section-subtitle">Sizes</h3>
-        <div className="flex gap-3" style={{ alignItems: 'center' }}>
+        <div className="flex gap-3 items-center">
           <Button size="sm">Small</Button>
           <Button size="md">Medium</Button>
           <Button size="lg">Large</Button>
@@ -142,7 +143,7 @@ export const AllVariants: Story = {
         <h3 className="section-subtitle">All Variants × Sizes</h3>
         <div className="flex flex-col gap-3">
           {(['primary', 'secondary', 'outline', 'ghost', 'destructive'] as const).map(variant => (
-            <div key={variant} className="flex gap-3" style={{ alignItems: 'center' }}>
+            <div key={variant} className="flex gap-3 items-center">
               <Button variant={variant} size="sm">{variant} SM</Button>
               <Button variant={variant} size="md">{variant} MD</Button>
               <Button variant={variant} size="lg">{variant} LG</Button>
@@ -158,7 +159,7 @@ export const AllVariants: Story = {
 export const ColorShowcase: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => (
-    <div className="showcase" style={{ padding: '24px' }}>
+    <div className="showcase p-5">
       <header className="showcase-header">
         <h1 className="showcase-title">Speck DS Color Palette</h1>
         <p className="showcase-description">Button variants on different backgrounds</p>
@@ -168,38 +169,58 @@ export const ColorShowcase: Story = {
       <section className="section">
         <h3 className="section-subtitle">Purple</h3>
         <div className="flex gap-2 mb-4">
-          {['100', '200', '300', '400', '500'].map(shade => (
-            <div key={shade} className="flex flex-col" style={{ alignItems: 'center' }}>
-              <div 
-                className="swatch-mini" 
-                style={{ 
-                  width: '60px', 
-                  height: '60px', 
-                  backgroundColor: `var(--color-purple-${shade})`,
-                  borderRadius: '8px',
-                }} 
-              />
-              <span className="text-sm text-muted">{shade}</span>
-            </div>
-          ))}
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-purple-100 rounded" />
+            <span className="text-sm text-muted">100</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-purple-200 rounded" />
+            <span className="text-sm text-muted">200</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-purple-300 rounded" />
+            <span className="text-sm text-muted">300</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-purple-400 rounded" />
+            <span className="text-sm text-muted">400</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-purple-500 rounded" />
+            <span className="text-sm text-muted">500</span>
+          </div>
         </div>
 
         <h3 className="section-subtitle">Grey</h3>
         <div className="flex gap-2 mb-5">
-          {['100', '200', '300', '400', '500', '600', '700'].map(shade => (
-            <div key={shade} className="flex flex-col" style={{ alignItems: 'center' }}>
-              <div 
-                style={{ 
-                  width: '60px', 
-                  height: '60px', 
-                  backgroundColor: `var(--color-grey-${shade})`,
-                  borderRadius: '8px',
-                  border: shade === '100' ? '1px solid var(--color-grey-300)' : 'none',
-                }} 
-              />
-              <span className="text-sm text-muted">{shade}</span>
-            </div>
-          ))}
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-grey-100 rounded border" />
+            <span className="text-sm text-muted">100</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-grey-200 rounded" />
+            <span className="text-sm text-muted">200</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-grey-300 rounded" />
+            <span className="text-sm text-muted">300</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-grey-400 rounded" />
+            <span className="text-sm text-muted">400</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-grey-500 rounded" />
+            <span className="text-sm text-muted">500</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-grey-600 rounded" />
+            <span className="text-sm text-muted">600</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="w-15 h-15 bg-grey-700 rounded" />
+            <span className="text-sm text-muted">700</span>
+          </div>
         </div>
       </section>
 
@@ -233,7 +254,7 @@ export const ColorShowcase: Story = {
 
       {/* Buttons on Dark */}
       <section className="section">
-        <h3 className="section-subtitle" style={{ color: 'var(--color-grey-100)' }}>Buttons on Dark Background</h3>
+        <h3 className="section-subtitle text-white">Buttons on Dark Background</h3>
         <div className="card card-dark">
           <div className="flex flex-wrap gap-3">
             <Button variant="primary">Primary</Button>

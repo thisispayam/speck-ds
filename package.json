@@ -7,9 +7,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./styles": "./dist/styles/tokens.css",
     "./styles/tokens": "./dist/styles/tokens.css",
@@ -54,6 +54,7 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "^8.6.14",
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/blocks": "^8.6.14",
     "@storybook/react": "^8.6.14",
