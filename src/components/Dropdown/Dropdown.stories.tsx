@@ -58,8 +58,18 @@ const countryOptions: DropdownOption[] = [
   { value: 'jp', label: 'Japan' },
 ];
 
-// Basic dropdown
+// Basic dropdown with state management
 export const Default: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
+    return (
+      <Dropdown
+        {...args}
+        value={value}
+        onChange={(val) => setValue(val)}
+      />
+    );
+  },
   args: {
     options: basicOptions,
     placeholder: 'Select an option',
@@ -68,6 +78,16 @@ export const Default: Story = {
 
 // With label
 export const WithLabel: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
+    return (
+      <Dropdown
+        {...args}
+        value={value}
+        onChange={(val) => setValue(val)}
+      />
+    );
+  },
   args: {
     options: countryOptions,
     placeholder: 'Select a country',
@@ -77,15 +97,34 @@ export const WithLabel: Story = {
 
 // With preselected value
 export const WithValue: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>('us');
+    return (
+      <Dropdown
+        {...args}
+        value={value}
+        onChange={(val) => setValue(val)}
+      />
+    );
+  },
   args: {
     options: countryOptions,
-    value: 'us',
     label: 'Country',
   },
 };
 
 // Sizes
 export const Small: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
+    return (
+      <Dropdown
+        {...args}
+        value={value}
+        onChange={(val) => setValue(val)}
+      />
+    );
+  },
   args: {
     options: basicOptions,
     size: 'sm',
@@ -94,6 +133,16 @@ export const Small: Story = {
 };
 
 export const Medium: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
+    return (
+      <Dropdown
+        {...args}
+        value={value}
+        onChange={(val) => setValue(val)}
+      />
+    );
+  },
   args: {
     options: basicOptions,
     size: 'md',
@@ -102,6 +151,16 @@ export const Medium: Story = {
 };
 
 export const Large: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
+    return (
+      <Dropdown
+        {...args}
+        value={value}
+        onChange={(val) => setValue(val)}
+      />
+    );
+  },
   args: {
     options: basicOptions,
     size: 'lg',
@@ -119,6 +178,16 @@ export const Disabled: Story = {
 };
 
 export const WithError: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
+    return (
+      <Dropdown
+        {...args}
+        value={value}
+        onChange={(val) => setValue(val)}
+      />
+    );
+  },
   args: {
     options: basicOptions,
     error: true,
@@ -137,6 +206,16 @@ const optionsWithDisabled: DropdownOption[] = [
 ];
 
 export const WithDisabledOptions: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
+    return (
+      <Dropdown
+        {...args}
+        value={value}
+        onChange={(val) => setValue(val)}
+      />
+    );
+  },
   args: {
     options: optionsWithDisabled,
     placeholder: 'Select an option',
@@ -146,6 +225,16 @@ export const WithDisabledOptions: Story = {
 
 // Full width
 export const FullWidth: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
+    return (
+      <Dropdown
+        {...args}
+        value={value}
+        onChange={(val) => setValue(val)}
+      />
+    );
+  },
   args: {
     options: basicOptions,
     fullWidth: true,
