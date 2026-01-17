@@ -249,7 +249,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           role="combobox"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
-          aria-controls={isOpen ? listId : undefined}
+          aria-controls={listId}
           aria-disabled={disabled}
           aria-label={ariaLabel}
           aria-labelledby={label ? `${dropdownId}-label` : undefined}
@@ -285,15 +285,15 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
             </svg>
           </span>
         </div>
-        {isOpen && (
-          <ul
-            ref={listRef}
-            className="ds-dropdown__list"
-            id={listId}
-            role="listbox"
-            aria-labelledby={dropdownId}
-          >
-            {options.map((option, index) => (
+        <ul
+          ref={listRef}
+          className="ds-dropdown__list"
+          id={listId}
+          role="listbox"
+          aria-labelledby={dropdownId}
+          hidden={!isOpen}
+        >
+          {options.map((option, index) => (
               <li
                 key={option.value}
                 className={[
@@ -334,7 +334,6 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
               </li>
             ))}
           </ul>
-        )}
         {error && errorMessage && <p className="ds-dropdown__error-message">{errorMessage}</p>}
         {name && <input type="hidden" name={name} value={value || ''} />}
       </div>
