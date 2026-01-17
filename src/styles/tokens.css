@@ -10,6 +10,7 @@
   --color-purple-200: #C5B4E9;
   --color-purple-300: #8B6AD3;
   --color-purple-400: #3E06B6;
+  --color-purple-500: #1F035B;
 
   /* Grey */
   --color-grey-100: #FFFFFF;
@@ -26,9 +27,9 @@
   --color-primary-200: #C5B4E9;
   --color-primary-300: #8B6AD3;
   --color-primary-400: #3E06B6;
-  --color-primary-500: #3E06B6;
-  --color-primary-hover: #8B6AD3;
-  --color-primary-active: #C5B4E9;
+  --color-primary-500: #1F035B;
+  --color-primary-hover: #3E06B6;
+  --color-primary-active: #8B6AD3;
 
   /* Spacing (defaults) */
   --spacing-1: 4px;

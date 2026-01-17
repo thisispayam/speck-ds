@@ -152,14 +152,27 @@ async function fetchFromFile() {
     if ((nodeName === 'purple' || nodeName === 'grey') && node.type === 'FRAME' && node.children) {
       console.log(`\n🎨 Found color frame: "${node.name}"`);
       
-      const swatches = node.children
-        .filter(c => {
-          const isRect = c.type === 'RECTANGLE' || (c.type === 'FRAME' && c.name.toLowerCase().startsWith('frame'));
+      // Collect all swatches including nested ones
+      const collectSwatches = (children) => {
+        const results = [];
+        for (const c of children) {
+          const isRect = c.type === 'RECTANGLE';
           const hasFill = c.fills?.[0]?.type === 'SOLID';
-          if (!isRect || !hasFill) return false;
-          const { r, g, b } = c.fills[0].color;
-          return !(r > 0.99 && g > 0.99 && b > 0.99); // Skip white
-        })
+          if (isRect && hasFill) {
+            const { r, g, b } = c.fills[0].color;
+            if (!(r > 0.99 && g > 0.99 && b > 0.99)) { // Skip white
+              results.push(c);
+            }
+          }
+          // Also check children of frames
+          if (c.type === 'FRAME' && c.children) {
+            results.push(...collectSwatches(c.children));
+          }
+        }
+        return results;
+      };
+      
+      const swatches = collectSwatches(node.children)
         .sort((a, b) => {
           const getL = (f) => (f.color.r + f.color.g + f.color.b) / 3;
           return getL(b.fills[0]) - getL(a.fills[0]);
