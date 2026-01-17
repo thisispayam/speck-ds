@@ -8,6 +8,7 @@
   display: inline-flex;
   flex-direction: column;
   font-family: var(--font-sans);
+  min-width: 180px;
 }
 
 .ds-dropdown--full-width {
