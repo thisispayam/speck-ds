@@ -76,6 +76,10 @@ export interface DropdownProps {
    * Name attribute for form submission
    */
   name?: string;
+  /**
+   * Accessible label for screen readers (overrides default)
+   */
+  'aria-label'?: string;
 }
 
 /**
@@ -97,6 +101,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       className = '',
       id,
       name,
+      'aria-label': ariaLabelProp,
     },
     ref
   ) => {
@@ -226,6 +231,9 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
 
     const dropdownId = id || `dropdown-${Math.random().toString(36).substr(2, 9)}`;
     const listId = `${dropdownId}-list`;
+    
+    // User-provided aria-label takes precedence, then placeholder if no label
+    const ariaLabel = ariaLabelProp || (label ? undefined : placeholder);
 
     return (
       <div className={classNames} ref={dropdownRef}>
@@ -243,7 +251,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           aria-haspopup="listbox"
           aria-controls={listId}
           aria-disabled={disabled}
-          aria-label={label ? undefined : placeholder}
+          aria-label={ariaLabel}
           aria-labelledby={label ? `${dropdownId}-label` : undefined}
           tabIndex={disabled ? -1 : 0}
           onClick={handleToggle}

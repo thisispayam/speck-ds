@@ -115,6 +115,9 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       .filter(Boolean)
       .join(' ');
 
+    // Default aria-label if no label is provided
+    const defaultAriaLabel = label ? undefined : (props.placeholder || 'Text input');
+
     return (
       <div className={wrapperClassNames}>
         {label && (
@@ -132,7 +135,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           onChange={handleChange}
           disabled={disabled}
           aria-invalid={hasError}
-          aria-label={label ? undefined : props.placeholder || 'Text input'}
+          aria-label={props['aria-label'] || defaultAriaLabel}
           aria-describedby={
             (helperText || errorMessage) ? `${id}-helper` : undefined
           }
