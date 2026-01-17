@@ -21,15 +21,15 @@
   --color-grey-600: #1A1A1A;
   --color-grey-700: #000000;
 
-  /* Primary (from Purple) */
+  /* Primary (from Purple - accent is purple-400) */
   --color-primary-50: #ECE6F8;
   --color-primary-100: #ECE6F8;
   --color-primary-200: #C5B4E9;
   --color-primary-300: #8B6AD3;
   --color-primary-400: #3E06B6;
-  --color-primary-500: #1F035B;
-  --color-primary-hover: #3E06B6;
-  --color-primary-active: #8B6AD3;
+  --color-primary-500: #3E06B6;
+  --color-primary-hover: #8B6AD3;
+  --color-primary-active: #C5B4E9;
 
   /* Spacing (defaults) */
   --spacing-1: 4px;
