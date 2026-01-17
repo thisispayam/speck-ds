@@ -1,7 +1,7 @@
 /**
- * Fetch Complete Figma File
+ * Fetch Complete Figma File & Update Tokens
  * 
- * Updates figma-complete.json with the latest data from Figma.
+ * Updates figma-complete.json AND tokens.css with ONE API call.
  * Run with: npm run fetch:figma
  * 
  * Requires FIGMA_API_KEY in .env file
@@ -15,6 +15,421 @@ require('dotenv').config();
 
 const FIGMA_FILE_ID = 'Th7UVyk0UGSWZW1Yx7sRu3';
 const OUTPUT_FILE = path.join(__dirname, '..', 'figma-complete.json');
+const TOKENS_CSS_FILE = path.join(__dirname, '..', 'src', 'styles', 'tokens.css');
+const TOKENS_TS_FILE = path.join(__dirname, '..', 'src', 'tokens', 'index.ts');
+const TOKENS_JSON_FILE = path.join(__dirname, '..', 'src', 'tokens', 'tokens.json');
+
+/**
+ * Convert Figma RGBA (0-1) to hex color
+ */
+function rgbaToHex(r, g, b) {
+  const toHex = (value) => {
+    const hex = Math.round(value * 255).toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  };
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+}
+
+/**
+ * Extract tokens from Figma document
+ */
+function extractTokensFromDocument(document) {
+  const tokens = {
+    palette: { purple: {}, grey: {} },
+    space: {},
+    radius: {},
+    font: { family: {}, size: {}, weight: {} },
+    lineHeight: {},
+  };
+
+  // Find color frames
+  function findColorFrames(node) {
+    const nodeName = node.name?.toLowerCase() || '';
+    
+    if ((nodeName === 'purple' || nodeName === 'grey') && node.type === 'FRAME' && node.children) {
+      console.log(`   🎨 Found color frame: "${node.name}"`);
+      
+      const collectSwatches = (children) => {
+        const results = [];
+        for (const c of children) {
+          const isRect = c.type === 'RECTANGLE';
+          const hasFill = c.fills?.[0]?.type === 'SOLID';
+          if (isRect && hasFill) {
+            const { r, g, b } = c.fills[0].color;
+            if (!(r > 0.99 && g > 0.99 && b > 0.99)) {
+              results.push(c);
+            }
+          }
+          if (c.type === 'FRAME' && c.children) {
+            results.push(...collectSwatches(c.children));
+          }
+        }
+        return results;
+      };
+      
+      const swatches = collectSwatches(node.children)
+        .sort((a, b) => {
+          const getL = (f) => (f.color.r + f.color.g + f.color.b) / 3;
+          return getL(b.fills[0]) - getL(a.fills[0]);
+        });
+      
+      const scales = ['100', '200', '300', '400', '500', '600', '700'];
+      swatches.forEach((s, i) => {
+        const { r, g, b } = s.fills[0].color;
+        const hex = rgbaToHex(r, g, b);
+        const scale = scales[i] || `${(i + 1) * 100}`;
+        tokens.palette[nodeName][scale] = hex;
+      });
+    }
+    
+    if (node.children) {
+      for (const child of node.children) {
+        findColorFrames(child);
+      }
+    }
+  }
+
+  findColorFrames(document);
+
+  // Add white to grey if missing
+  if (!Object.values(tokens.palette.grey).includes('#FFFFFF')) {
+    const newGrey = { '100': '#FFFFFF' };
+    let scale = 200;
+    for (const v of Object.values(tokens.palette.grey)) {
+      newGrey[String(scale)] = v;
+      scale += 100;
+    }
+    tokens.palette.grey = newGrey;
+  }
+
+  // Parse tokens from text nodes on Page 1
+  function findTextTokens(node) {
+    if (node.type === 'TEXT' && node.characters) {
+      const text = node.characters;
+      
+      // Parse spacing: space.1 = 4 space.2 = 8 ...
+      const spaceMatches = text.matchAll(/space\.(\d+)\s*=\s*(\d+)/g);
+      for (const match of spaceMatches) {
+        tokens.space[match[1]] = parseInt(match[2]);
+      }
+      
+      // Parse radius: radius.sm = 8px radius.md = 16px ...
+      const radiusMatches = text.matchAll(/radius\.(\w+)\s*=\s*(\d+)(?:px)?/g);
+      for (const match of radiusMatches) {
+        tokens.radius[match[1]] = parseInt(match[2]);
+      }
+      
+      // Parse font sizes: font.size.xs = 10px ...
+      const fontSizeMatches = text.matchAll(/font\.size\.(\w+)\s*=\s*(\d+)(?:px)?/g);
+      for (const match of fontSizeMatches) {
+        tokens.font.size[match[1]] = parseInt(match[2]);
+      }
+      
+      // Parse font weights: font-weight.400 = 400 ...
+      const fontWeightMatches = text.matchAll(/font-weight\.(\d+)\s*=\s*(\d+)/g);
+      for (const match of fontWeightMatches) {
+        tokens.font.weight[match[1]] = parseInt(match[2]);
+      }
+      
+      // Parse line heights: lineHeight.tight = 1.15 ...
+      const lineHeightMatches = text.matchAll(/lineHeight\.(\w+)\s*=\s*([\d.]+)/g);
+      for (const match of lineHeightMatches) {
+        tokens.lineHeight[match[1]] = parseFloat(match[2]);
+      }
+      
+      // Parse font family
+      if (text.includes('font-family.seif') || text.includes('font.family.sans')) {
+        const serifMatch = text.match(/font[.-]family\.?se(?:i|ri)f?\s*=\s*([^;]+?)(?:\s+font|$)/i);
+        const sansMatch = text.match(/font\.?family\.?sans\s*=\s*([^;]+?)(?:\s+font|$)/i);
+        if (serifMatch) tokens.font.family.serif = serifMatch[1].trim();
+        if (sansMatch) tokens.font.family.sans = sansMatch[1].trim();
+      }
+    }
+    
+    if (node.children) {
+      for (const child of node.children) {
+        findTextTokens(child);
+      }
+    }
+  }
+
+  findTextTokens(document);
+
+  return tokens;
+}
+
+/**
+ * Generate CSS variables from tokens
+ */
+function generateCssVariables(tokens) {
+  const timestamp = new Date().toISOString();
+  
+  let css = `/**
+ * Speck DS - Design System Tokens
+ * Auto-generated from Figma
+ * Last sync: ${timestamp}
+ */
+
+:root {
+`;
+
+  // Colors
+  for (const [group, shades] of Object.entries(tokens.palette)) {
+    if (Object.keys(shades).length === 0) continue;
+    css += `  /* ${group.charAt(0).toUpperCase() + group.slice(1)} */\n`;
+    const sortedShades = Object.entries(shades).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+    for (const [shade, value] of sortedShades) {
+      css += `  --color-${group}-${shade}: ${value};\n`;
+    }
+    css += '\n';
+  }
+  
+  // Primary (mapped from purple - accent is purple-400)
+  if (tokens.palette.purple && Object.keys(tokens.palette.purple).length > 0) {
+    css += `  /* Primary (from Purple - accent is purple-400) */\n`;
+    css += `  --color-primary-50: ${tokens.palette.purple['100']};\n`;
+    css += `  --color-primary-100: ${tokens.palette.purple['100']};\n`;
+    css += `  --color-primary-200: ${tokens.palette.purple['200']};\n`;
+    css += `  --color-primary-300: ${tokens.palette.purple['300']};\n`;
+    css += `  --color-primary-400: ${tokens.palette.purple['400']};\n`;
+    css += `  --color-primary-500: ${tokens.palette.purple['400']};\n`;
+    css += `  --color-primary-hover: ${tokens.palette.purple['300']};\n`;
+    css += `  --color-primary-active: ${tokens.palette.purple['200']};\n\n`;
+  }
+
+  // Semantic Colors - Light Mode
+  css += `  /* Semantic Colors - Light Mode (default) */\n`;
+  css += `  --color-background-primary: var(--color-grey-100);\n`;
+  css += `  --color-background-secondary: var(--color-grey-200);\n`;
+  css += `  --color-background-tertiary: var(--color-grey-300);\n`;
+  css += `  --color-foreground-primary: var(--color-grey-600);\n`;
+  css += `  --color-foreground-secondary: var(--color-grey-500);\n`;
+  css += `  --color-foreground-tertiary: var(--color-grey-400);\n`;
+  css += `  --color-border-subtle: var(--color-grey-200);\n`;
+  css += `  --color-border-strong: var(--color-grey-300);\n`;
+  css += `  --color-accent-primary: var(--color-purple-400);\n`;
+  css += `  --color-accent-primary-hover: var(--color-purple-300);\n`;
+  css += `  --color-accent-primary-active: var(--color-purple-200);\n\n`;
+
+  // Spacing
+  if (Object.keys(tokens.space).length > 0) {
+    css += `  /* Spacing */\n`;
+    const sortedSpace = Object.entries(tokens.space).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+    for (const [key, value] of sortedSpace) {
+      css += `  --spacing-${key}: ${value}px;\n`;
+    }
+    css += '\n';
+  } else {
+    css += `  /* Spacing (defaults) */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 24px;
+  --spacing-6: 32px;
+  --spacing-7: 48px;
+  --spacing-8: 64px;
+
+`;
+  }
+
+  // Border Radius
+  if (Object.keys(tokens.radius).length > 0) {
+    css += `  /* Border Radius */\n`;
+    const radiusOrder = ['none', 'sm', 'md', 'lg', 'xl', 'full'];
+    const sortedRadius = Object.entries(tokens.radius).sort((a, b) => {
+      const aIdx = radiusOrder.indexOf(a[0]);
+      const bIdx = radiusOrder.indexOf(b[0]);
+      return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+    });
+    for (const [key, value] of sortedRadius) {
+      css += `  --radius-${key}: ${value}px;\n`;
+    }
+    css += '\n';
+  } else {
+    css += `  /* Border Radius (defaults) */
+  --radius-none: 0px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 999px;
+
+`;
+  }
+
+  // Typography - Fonts
+  if (tokens.font.family && Object.keys(tokens.font.family).length > 0) {
+    css += `  /* Typography - Fonts */\n`;
+    for (const [key, value] of Object.entries(tokens.font.family)) {
+      css += `  --font-${key}: "${value.replace(/"/g, '')}";\n`;
+    }
+    css += '\n';
+  } else {
+    css += `  /* Typography - Fonts (defaults) */
+  --font-serif: "Noe Display", Merriweather, Georgia, serif;
+  --font-sans: "Avenir", "Helvetica Neue", sans-serif;
+
+`;
+  }
+
+  // Typography - Sizes
+  if (tokens.font.size && Object.keys(tokens.font.size).length > 0) {
+    css += `  /* Typography - Sizes */\n`;
+    const sizeOrder = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'];
+    const sortedSizes = Object.entries(tokens.font.size).sort((a, b) => {
+      const aIdx = sizeOrder.indexOf(a[0]);
+      const bIdx = sizeOrder.indexOf(b[0]);
+      return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+    });
+    for (const [key, value] of sortedSizes) {
+      css += `  --text-${key}: ${value}px;\n`;
+    }
+    css += '\n';
+  } else {
+    css += `  /* Typography - Sizes (defaults) */
+  --text-xs: 10px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 36px;
+
+`;
+  }
+
+  // Line Heights
+  if (Object.keys(tokens.lineHeight).length > 0) {
+    css += `  /* Line Heights */\n`;
+    for (const [key, value] of Object.entries(tokens.lineHeight)) {
+      css += `  --leading-${key}: ${value};\n`;
+    }
+    css += '\n';
+  } else {
+    css += `  /* Line Heights (defaults) */
+  --leading-tight: 1.15;
+  --leading-standard: 1.35;
+  --leading-relaxed: 1.6;
+  --leading-reader: 1.75;
+
+`;
+  }
+
+  // Shadows
+  css += `  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Dark Theme */
+[data-theme="dark"],
+.dark-theme {
+  --color-background-primary: var(--color-grey-700);
+  --color-background-secondary: var(--color-grey-600);
+  --color-background-tertiary: var(--color-grey-500);
+  --color-foreground-primary: var(--color-grey-100);
+  --color-foreground-secondary: var(--color-grey-200);
+  --color-foreground-tertiary: var(--color-grey-300);
+  --color-border-subtle: var(--color-grey-500);
+  --color-border-strong: var(--color-grey-400);
+  --color-accent-primary: var(--color-purple-300);
+  --color-accent-primary-hover: var(--color-purple-200);
+  --color-accent-primary-active: var(--color-purple-100);
+}
+`;
+  
+  return css;
+}
+
+/**
+ * Generate TypeScript tokens
+ */
+function generateTypeScriptTokens(tokens) {
+  const timestamp = new Date().toISOString();
+  
+  const sortShades = (obj) => {
+    const sorted = {};
+    Object.keys(obj).sort((a, b) => parseInt(a) - parseInt(b)).forEach(k => sorted[k] = obj[k]);
+    return sorted;
+  };
+
+  const colors = {
+    purple: sortShades(tokens.palette.purple || {}),
+    grey: sortShades(tokens.palette.grey || {}),
+    primary: tokens.palette.purple ? {
+      50: tokens.palette.purple['100'],
+      100: tokens.palette.purple['100'],
+      200: tokens.palette.purple['200'],
+      300: tokens.palette.purple['300'],
+      400: tokens.palette.purple['400'],
+      500: tokens.palette.purple['400'],
+      hover: tokens.palette.purple['300'],
+      active: tokens.palette.purple['200'],
+    } : {},
+  };
+
+  const spacing = Object.keys(tokens.space).length > 0 ? tokens.space : {
+    1: 4, 2: 8, 3: 12, 4: 16, 5: 24, 6: 32, 7: 48, 8: 64
+  };
+  
+  const borderRadius = Object.keys(tokens.radius).length > 0 ? tokens.radius : {
+    none: 0, sm: 8, md: 16, lg: 24, full: 999
+  };
+
+  const fontFamily = tokens.font.family && Object.keys(tokens.font.family).length > 0 
+    ? tokens.font.family 
+    : { serif: '"Noe Display", Merriweather, Georgia, serif', sans: '"Avenir", "Helvetica Neue", sans-serif' };
+
+  const fontSize = tokens.font.size && Object.keys(tokens.font.size).length > 0
+    ? tokens.font.size
+    : { xs: 10, sm: 14, md: 16, lg: 20, xl: 24, '2xl': 36 };
+
+  const fontWeight = tokens.font.weight && Object.keys(tokens.font.weight).length > 0
+    ? tokens.font.weight
+    : { 400: 400, 500: 500, 600: 600, 700: 700 };
+
+  const lineHeight = Object.keys(tokens.lineHeight).length > 0
+    ? tokens.lineHeight
+    : { tight: 1.15, standard: 1.35, relaxed: 1.6, reader: 1.75 };
+
+  return `/**
+ * Speck DS - Design System Tokens
+ * Auto-generated from Figma
+ * Last sync: ${timestamp}
+ */
+
+export const colors = ${JSON.stringify(colors, null, 2)} as const;
+
+export const spacing = ${JSON.stringify(spacing, null, 2)} as const;
+
+export const borderRadius = ${JSON.stringify(borderRadius, null, 2)} as const;
+
+export const typography = {
+  fontFamily: ${JSON.stringify(fontFamily, null, 4)},
+  fontSize: ${JSON.stringify(fontSize, null, 4)},
+  fontWeight: ${JSON.stringify(fontWeight, null, 4)},
+  lineHeight: ${JSON.stringify(lineHeight, null, 4)},
+} as const;
+
+export const shadows = {
+  sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+  md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+  lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+  xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+} as const;
+
+// Type exports
+export type PurpleShade = keyof typeof colors.purple;
+export type GreyShade = keyof typeof colors.grey;
+export type PrimaryShade = keyof typeof colors.primary;
+export type SpacingKey = keyof typeof spacing;
+export type BorderRadiusKey = keyof typeof borderRadius;
+export type FontSize = keyof typeof typography.fontSize;
+export type FontWeight = keyof typeof typography.fontWeight;
+export type LineHeight = keyof typeof typography.lineHeight;
+`;
+}
 
 async function fetchFigmaFile() {
   const apiKey = process.env.FIGMA_API_KEY;
@@ -24,8 +439,8 @@ async function fetchFigmaFile() {
     process.exit(1);
   }
 
-  console.log('🎨 Fetching Figma file...');
-  console.log(`   File ID: ${FIGMA_FILE_ID}`);
+  console.log('🎨 Fetching Figma file (ONE API call)...');
+  console.log(`   File ID: ${FIGMA_FILE_ID}\n`);
 
   try {
     const response = await fetch(
@@ -48,20 +463,43 @@ async function fetchFigmaFile() {
     }
 
     const data = await response.json();
+    const timestamp = new Date().toISOString();
     
-    // Add metadata
+    // Save complete Figma file
     const output = {
       ...data,
-      _fetchedAt: new Date().toISOString(),
+      _fetchedAt: timestamp,
       _fileId: FIGMA_FILE_ID,
     };
-
     fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2));
+    console.log('✅ Saved figma-complete.json');
 
-    console.log('✅ Success! Figma file saved to figma-complete.json');
+    // Extract and generate tokens
+    console.log('\n📦 Extracting tokens from Figma...');
+    const tokens = extractTokensFromDocument(data.document);
+    
+    // Ensure directories exist
+    fs.mkdirSync(path.dirname(TOKENS_CSS_FILE), { recursive: true });
+    fs.mkdirSync(path.dirname(TOKENS_TS_FILE), { recursive: true });
+
+    // Generate CSS
+    const cssContent = generateCssVariables(tokens);
+    fs.writeFileSync(TOKENS_CSS_FILE, cssContent);
+    console.log('✅ Updated src/styles/tokens.css');
+
+    // Generate TypeScript
+    const tsContent = generateTypeScriptTokens(tokens);
+    fs.writeFileSync(TOKENS_TS_FILE, tsContent);
+    console.log('✅ Updated src/tokens/index.ts');
+
+    // Save tokens JSON
+    fs.writeFileSync(TOKENS_JSON_FILE, JSON.stringify(tokens, null, 2));
+    console.log('✅ Updated src/tokens/tokens.json');
+
+    console.log(`\n🎉 Done! All files updated from Figma.`);
     console.log(`   File name: ${data.name}`);
     console.log(`   Last modified: ${data.lastModified}`);
-    console.log(`   Fetched at: ${output._fetchedAt}`);
+    console.log(`   Fetched at: ${timestamp}`);
 
   } catch (error) {
     console.error('❌ Error fetching Figma file:', error.message);
