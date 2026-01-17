@@ -9,5 +9,11 @@ export type { ButtonProps, ButtonVariant, ButtonSize } from './components/Button
 export { Dropdown } from './components/Dropdown';
 export type { DropdownProps, DropdownOption, DropdownSize } from './components/Dropdown';
 
+export { Chip } from './components/Chip';
+export type { ChipProps, ChipVariant, ChipSize } from './components/Chip';
+
+export { TextArea } from './components/TextArea';
+export type { TextAreaProps, TextAreaSize } from './components/TextArea';
+
 // Tokens
 export * from './tokens';

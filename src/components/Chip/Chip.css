@@ -1,0 +1,146 @@
+/**
+ * Chip Component Styles
+ * Based on Figma design - outline and filled variants
+ */
+
+.ds-chip {
+  /* Base styles */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  font-family: var(--font-sans);
+  font-weight: var(--font-medium);
+  border-radius: var(--radius-full);
+  transition: all 0.15s ease-in-out;
+  border: 1px solid;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Sizes */
+.ds-chip--sm {
+  height: 24px;
+  padding: 0 var(--spacing-2);
+  font-size: var(--text-xs);
+}
+
+.ds-chip--md {
+  height: 32px;
+  padding: 0 var(--spacing-3);
+  font-size: var(--text-sm);
+}
+
+.ds-chip--lg {
+  height: 40px;
+  padding: 0 var(--spacing-4);
+  font-size: var(--text-sm);
+}
+
+/* Variants */
+.ds-chip--outline {
+  background-color: var(--color-grey-100);
+  color: var(--color-grey-600);
+  border-color: var(--color-grey-400);
+}
+
+.ds-chip--outline:hover:not(.ds-chip--disabled) {
+  background-color: var(--color-grey-200);
+  border-color: var(--color-grey-500);
+}
+
+.ds-chip--outline.ds-chip--selected {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+}
+
+.ds-chip--filled {
+  background-color: var(--color-grey-600);
+  color: var(--color-grey-100);
+  border-color: var(--color-grey-600);
+}
+
+.ds-chip--filled:hover:not(.ds-chip--disabled) {
+  background-color: var(--color-grey-500);
+  border-color: var(--color-grey-500);
+}
+
+.ds-chip--filled.ds-chip--selected {
+  background-color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+}
+
+/* Clickable */
+.ds-chip--clickable {
+  cursor: pointer;
+}
+
+.ds-chip--clickable:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Disabled */
+.ds-chip--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Icons */
+.ds-chip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ds-chip__icon--left {
+  margin-left: calc(var(--spacing-1) * -1);
+}
+
+.ds-chip__icon--right {
+  margin-right: calc(var(--spacing-1) * -1);
+}
+
+.ds-chip__icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Label */
+.ds-chip__label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Remove button */
+.ds-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--spacing-1);
+  margin-right: calc(var(--spacing-1) * -1);
+  padding: 2px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.ds-chip__remove:hover:not(:disabled) {
+  opacity: 1;
+}
+
+.ds-chip__remove:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+}
+
+.ds-chip__remove:disabled {
+  cursor: not-allowed;
+}

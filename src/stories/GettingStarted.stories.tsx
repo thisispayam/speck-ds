@@ -4,6 +4,8 @@ import '../styles/tokens.css';
 import '../styles/helpers.css';
 import { Button } from '../components/Button';
 import { Dropdown } from '../components/Dropdown';
+import { Chip } from '../components/Chip';
+import { TextArea } from '../components/TextArea';
 
 const meta: Meta = {
   title: 'Getting Started/Installation',
@@ -39,12 +41,14 @@ export const Installation: StoryObj = {
           Import any component directly. CSS tokens and helpers are automatically included!
         </p>
         <pre className="bg-grey-700 text-white p-4 rounded-md text-sm overflow-x-auto">
-{`import { Button, Dropdown } from '@thisispayam/speck-ds';
+{`import { Button, Dropdown, Chip, TextArea } from '@thisispayam/speck-ds';
 
 function App() {
   return (
     <div>
       <Button variant="primary">Click me</Button>
+      <Chip variant="outline">Tag</Chip>
+      <TextArea label="Notes" placeholder="Enter notes..." />
       <Dropdown 
         options={[
           { value: '1', label: 'Option 1' },
@@ -180,6 +184,74 @@ interface DropdownProps {
   disabled?: boolean;
   size?: 'sm' | 'md' | 'lg';
   onChange?: (option: DropdownOption) => void;
+}`}
+        </pre>
+      </section>
+
+      <section className="mb-6">
+        <h2 className="font-semibold text-lg mb-3 border-b pb-2">Chip</h2>
+        <p className="text-muted mb-4">
+          Tag component for filters, categories, or selections.
+        </p>
+        
+        <div className="flex flex-wrap gap-3 mb-4 p-4 bg-grey-200 rounded-md">
+          <Chip variant="outline">Label</Chip>
+          <Chip variant="filled">Label</Chip>
+        </div>
+
+        <pre className="bg-grey-700 text-white p-4 rounded-md text-sm overflow-x-auto">
+{`import { Chip } from '@thisispayam/speck-ds';
+
+<Chip variant="outline">Label</Chip>
+<Chip variant="filled">Label</Chip>
+
+// Props
+interface ChipProps {
+  variant?: 'outline' | 'filled';
+  size?: 'sm' | 'md' | 'lg';
+  selected?: boolean;
+  disabled?: boolean;
+  clickable?: boolean;
+  onRemove?: () => void;
+}`}
+        </pre>
+      </section>
+
+      <section className="mb-6">
+        <h2 className="font-semibold text-lg mb-3 border-b pb-2">TextArea</h2>
+        <p className="text-muted mb-4">
+          Multi-line text input with label, helper text, and character count.
+        </p>
+        
+        <div className="mb-4 p-4 bg-grey-200 rounded-md">
+          <TextArea 
+            label="Text area"
+            defaultValue="Value"
+            helperText="Instruction text"
+            showCount
+            maxLength={100}
+          />
+        </div>
+
+        <pre className="bg-grey-700 text-white p-4 rounded-md text-sm overflow-x-auto">
+{`import { TextArea } from '@thisispayam/speck-ds';
+
+<TextArea
+  label="Text area"
+  helperText="Instruction text"
+  showCount
+  maxLength={100}
+/>
+
+// Props
+interface TextAreaProps {
+  label?: string;
+  helperText?: string;
+  errorMessage?: string;
+  showCount?: boolean;
+  maxLength?: number;
+  size?: 'sm' | 'md' | 'lg';
+  rows?: number;
 }`}
         </pre>
       </section>

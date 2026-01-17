@@ -11,7 +11,7 @@
   gap: var(--spacing-2);
   font-family: var(--font-sans);
   font-weight: var(--font-medium);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-full);
   cursor: pointer;
   transition: all 0.15s ease-in-out;
   border: 1px solid transparent;

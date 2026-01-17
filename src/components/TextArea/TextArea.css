@@ -1,0 +1,126 @@
+/**
+ * TextArea Component Styles
+ * Based on Figma design - with label, helper text, and character count
+ */
+
+.ds-textarea-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  font-family: var(--font-sans);
+}
+
+.ds-textarea-wrapper--full-width {
+  width: 100%;
+}
+
+.ds-textarea-wrapper--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Label */
+.ds-textarea__label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-primary-500);
+  margin-bottom: var(--spacing-1);
+}
+
+/* TextArea */
+.ds-textarea {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-grey-600);
+  background-color: var(--color-grey-100);
+  border: 1px solid var(--color-grey-300);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-3);
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  outline: none;
+}
+
+.ds-textarea::placeholder {
+  color: var(--color-grey-400);
+}
+
+.ds-textarea:hover:not(:disabled) {
+  border-color: var(--color-grey-400);
+}
+
+.ds-textarea:focus:not(:disabled) {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
+}
+
+.ds-textarea:disabled {
+  cursor: not-allowed;
+  background-color: var(--color-grey-200);
+}
+
+/* Error state */
+.ds-textarea-wrapper--error .ds-textarea {
+  border-color: var(--color-error-500, #dc2626);
+}
+
+.ds-textarea-wrapper--error .ds-textarea:focus {
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}
+
+.ds-textarea-wrapper--error .ds-textarea__helper-text {
+  color: var(--color-error-500, #dc2626);
+}
+
+/* Sizes */
+.ds-textarea--sm {
+  padding: var(--spacing-2);
+  font-size: var(--text-xs);
+}
+
+.ds-textarea--md {
+  padding: var(--spacing-3);
+  font-size: var(--text-sm);
+}
+
+.ds-textarea--lg {
+  padding: var(--spacing-4);
+  font-size: var(--text-md);
+}
+
+/* Resize */
+.ds-textarea--resize-none {
+  resize: none;
+}
+
+.ds-textarea--resize-vertical {
+  resize: vertical;
+}
+
+.ds-textarea--resize-horizontal {
+  resize: horizontal;
+}
+
+.ds-textarea--resize-both {
+  resize: both;
+}
+
+/* Footer (helper text + count) */
+.ds-textarea__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.ds-textarea__helper-text {
+  font-size: var(--text-xs);
+  color: var(--color-grey-500);
+  flex: 1;
+}
+
+.ds-textarea__count {
+  font-size: var(--text-xs);
+  color: var(--color-grey-400);
+  white-space: nowrap;
+}
