@@ -132,6 +132,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           onChange={handleChange}
           disabled={disabled}
           aria-invalid={hasError}
+          aria-label={label ? undefined : props.placeholder || 'Text input'}
           aria-describedby={
             (helperText || errorMessage) ? `${id}-helper` : undefined
           }

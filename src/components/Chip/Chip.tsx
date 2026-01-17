@@ -103,6 +103,9 @@ export const Chip = forwardRef<HTMLSpanElement, ChipProps>(
       }
     };
 
+    // Get text content for aria-label
+    const chipLabel = typeof children === 'string' ? children : undefined;
+
     return (
       <span
         ref={ref}
@@ -111,6 +114,8 @@ export const Chip = forwardRef<HTMLSpanElement, ChipProps>(
         role={clickable || onSelect ? 'button' : undefined}
         tabIndex={clickable || onSelect ? 0 : undefined}
         aria-disabled={disabled}
+        aria-label={clickable || onSelect ? (props['aria-label'] || chipLabel) : undefined}
+        aria-pressed={clickable || onSelect ? selected : undefined}
         {...props}
       >
         {leftIcon && <span className="ds-chip__icon ds-chip__icon--left">{leftIcon}</span>}

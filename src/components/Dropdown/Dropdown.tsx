@@ -230,7 +230,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
     return (
       <div className={classNames} ref={dropdownRef}>
         {label && (
-          <label className="ds-dropdown__label" htmlFor={dropdownId}>
+          <label className="ds-dropdown__label" id={`${dropdownId}-label`} htmlFor={dropdownId}>
             {label}
           </label>
         )}
@@ -243,6 +243,8 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           aria-haspopup="listbox"
           aria-controls={listId}
           aria-disabled={disabled}
+          aria-label={label ? undefined : placeholder}
+          aria-labelledby={label ? `${dropdownId}-label` : undefined}
           tabIndex={disabled ? -1 : 0}
           onClick={handleToggle}
           onKeyDown={handleKeyDown}
