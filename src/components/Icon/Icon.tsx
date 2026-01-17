@@ -1,6 +1,10 @@
 /**
  * Icon Component
  * SVG icon system based on Figma designs
+ * 
+ * Icons from Figma:
+ * - Chevron/down/16 (16x16px)
+ * - Chevron/down/12 (12x12px)
  */
 
 import React from 'react';
@@ -12,12 +16,13 @@ export type IconName =
   | 'chevron-left'
   | 'chevron-right';
 
-export type IconSize = 12 | 16 | 20 | 24;
+/** Icon sizes from Figma: 12px and 16px */
+export type IconSize = 12 | 16;
 
 export interface IconProps {
   /** Icon name */
   name: IconName;
-  /** Icon size in pixels */
+  /** Icon size in pixels (from Figma: 12 or 16) */
   size?: IconSize;
   /** Custom color (inherits from parent by default) */
   color?: string;
@@ -29,20 +34,16 @@ export interface IconProps {
   'aria-hidden'?: boolean;
 }
 
-// SVG paths for each icon (from Figma)
+/**
+ * SVG paths for each icon
+ * Based on Figma chevron polygon vectors
+ * ViewBox is sized to match Figma component bounds
+ */
 const iconPaths: Record<IconName, string> = {
-  'chevron-down': 'M3 5L8 10L13 5',
-  'chevron-up': 'M3 10L8 5L13 10',
-  'chevron-left': 'M10 3L5 8L10 13',
-  'chevron-right': 'M5 3L10 8L5 13',
-};
-
-// ViewBox sizes based on icon size
-const viewBoxes: Record<IconSize, string> = {
-  12: '0 0 16 16',
-  16: '0 0 20 20',
-  20: '0 0 24 24',
-  24: '0 0 28 28',
+  'chevron-down': 'M3 4.5L8 9.5L13 4.5',
+  'chevron-up': 'M3 9.5L8 4.5L13 9.5',
+  'chevron-left': 'M9.5 3L4.5 8L9.5 13',
+  'chevron-right': 'M4.5 3L9.5 8L4.5 13',
 };
 
 export const Icon: React.FC<IconProps> = ({
@@ -54,7 +55,6 @@ export const Icon: React.FC<IconProps> = ({
   'aria-hidden': ariaHidden,
 }) => {
   const path = iconPaths[name];
-  const viewBox = viewBoxes[size];
   
   // Determine if icon should be hidden from screen readers
   const isDecorative = ariaHidden ?? !ariaLabel;
@@ -70,10 +70,10 @@ export const Icon: React.FC<IconProps> = ({
       className={classes}
       width={size}
       height={size}
-      viewBox={viewBox}
+      viewBox={`0 0 ${size} ${size}`}
       fill="none"
       stroke={color || 'currentColor'}
-      strokeWidth="2"
+      strokeWidth="1"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-label={ariaLabel}

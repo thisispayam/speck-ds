@@ -8,7 +8,7 @@ const meta: Meta<typeof Icon> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'SVG icon component based on Figma designs. Supports multiple sizes and colors.',
+        component: 'SVG icon component based on Figma designs. Sizes 12px and 16px from Figma.',
       },
     },
   },
@@ -21,8 +21,8 @@ const meta: Meta<typeof Icon> = {
     },
     size: {
       control: 'select',
-      options: [12, 16, 20, 24],
-      description: 'Icon size in pixels',
+      options: [12, 16],
+      description: 'Icon size in pixels (from Figma)',
     },
     color: {
       control: 'color',
@@ -66,7 +66,7 @@ export const AllIcons: Story = {
               minWidth: '80px',
             }}
           >
-            <Icon name={name} size={24} />
+            <Icon name={name} size={16} />
             <span style={{ fontSize: '12px', color: '#666' }}>{name}</span>
           </div>
         ))}
@@ -86,14 +86,6 @@ export const Sizes: Story = {
         <Icon name="chevron-down" size={16} />
         <span style={{ fontSize: '12px', color: '#666' }}>16px</span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-        <Icon name="chevron-down" size={20} />
-        <span style={{ fontSize: '12px', color: '#666' }}>20px</span>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-        <Icon name="chevron-down" size={24} />
-        <span style={{ fontSize: '12px', color: '#666' }}>24px</span>
-      </div>
     </div>
   ),
 };
@@ -101,10 +93,10 @@ export const Sizes: Story = {
 export const Colors: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-      <Icon name="chevron-down" size={24} color="#3E06B6" aria-label="Down in purple" />
-      <Icon name="chevron-up" size={24} color="#dc2626" aria-label="Up in red" />
-      <Icon name="chevron-left" size={24} color="#16a34a" aria-label="Left in green" />
-      <Icon name="chevron-right" size={24} color="#ca8a04" aria-label="Right in yellow" />
+      <Icon name="chevron-down" size={16} color="#3E06B6" aria-label="Down in purple" />
+      <Icon name="chevron-up" size={16} color="#dc2626" aria-label="Up in red" />
+      <Icon name="chevron-left" size={16} color="#16a34a" aria-label="Left in green" />
+      <Icon name="chevron-right" size={16} color="#ca8a04" aria-label="Right in yellow" />
     </div>
   ),
 };
