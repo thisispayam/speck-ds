@@ -1,7 +1,7 @@
 /**
  * Speck DS - Design System Tokens
  * Auto-generated from Figma
- * Last sync: 2026-01-17T00:31:01.115Z
+ * Last sync: 2026-01-17T00:46:09.159Z
  */
 
 export const colors = {
@@ -9,7 +9,8 @@ export const colors = {
     "100": "#ECE6F8",
     "200": "#C5B4E9",
     "300": "#8B6AD3",
-    "400": "#3E06B6"
+    "400": "#3E06B6",
+    "500": "#1F035B"
   },
   "grey": {
     "100": "#FFFFFF",
@@ -26,6 +27,7 @@ export const colors = {
     "200": "#C5B4E9",
     "300": "#8B6AD3",
     "400": "#3E06B6",
+    "500": "#1F035B",
     "hover": "#3E06B6",
     "active": "#8B6AD3"
   }
