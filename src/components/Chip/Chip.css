@@ -18,57 +18,57 @@
   user-select: none;
 }
 
-/* Sizes */
+/* Sizes - Based on Figma: padding 12px horizontal, 4px vertical */
 .ds-chip--sm {
-  height: 24px;
-  padding: 0 var(--spacing-2);
+  height: 22px;
+  padding: 2px var(--spacing-2);
   font-size: var(--text-xs);
 }
 
 .ds-chip--md {
-  height: 32px;
-  padding: 0 var(--spacing-3);
+  height: 26px;
+  padding: var(--spacing-1) var(--spacing-3);
   font-size: var(--text-sm);
 }
 
 .ds-chip--lg {
-  height: 40px;
-  padding: 0 var(--spacing-4);
+  height: 32px;
+  padding: 6px var(--spacing-4);
   font-size: var(--text-sm);
 }
 
-/* Variants */
+/* Variants - Based on Figma specs */
 .ds-chip--outline {
   background-color: var(--color-grey-100);
   color: var(--color-grey-600);
-  border-color: var(--color-grey-400);
+  border-color: var(--color-grey-300);
 }
 
 .ds-chip--outline:hover:not(.ds-chip--disabled) {
   background-color: var(--color-grey-200);
-  border-color: var(--color-grey-500);
+  border-color: var(--color-grey-400);
 }
 
 .ds-chip--outline.ds-chip--selected {
-  background-color: var(--color-primary-100);
-  color: var(--color-primary-500);
-  border-color: var(--color-primary-500);
+  background-color: var(--color-grey-700);
+  color: var(--color-grey-100);
+  border-color: var(--color-grey-700);
 }
 
 .ds-chip--filled {
-  background-color: var(--color-grey-600);
+  background-color: var(--color-grey-700);
   color: var(--color-grey-100);
-  border-color: var(--color-grey-600);
+  border-color: var(--color-grey-700);
 }
 
 .ds-chip--filled:hover:not(.ds-chip--disabled) {
-  background-color: var(--color-grey-500);
-  border-color: var(--color-grey-500);
+  background-color: var(--color-grey-600);
+  border-color: var(--color-grey-600);
 }
 
 .ds-chip--filled.ds-chip--selected {
-  background-color: var(--color-primary-500);
-  border-color: var(--color-primary-500);
+  background-color: var(--color-grey-700);
+  border-color: var(--color-grey-700);
 }
 
 /* Clickable */

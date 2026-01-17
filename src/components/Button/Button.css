@@ -30,23 +30,23 @@
   cursor: not-allowed;
 }
 
-/* Sizes */
+/* Sizes - Based on Figma: padding 12px horizontal, 8px vertical */
 .ds-button--sm {
-  height: 32px;
-  padding: 0 var(--spacing-3);
-  font-size: var(--text-sm);
+  height: 28px;
+  padding: 6px var(--spacing-3);
+  font-size: var(--text-xs);
 }
 
 .ds-button--md {
-  height: 40px;
-  padding: 0 var(--spacing-4);
+  height: 36px;
+  padding: var(--spacing-2) var(--spacing-3);
   font-size: var(--text-sm);
 }
 
 .ds-button--lg {
-  height: 48px;
-  padding: 0 var(--spacing-6);
-  font-size: var(--text-base);
+  height: 44px;
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--text-sm);
 }
 
 /* Variants */

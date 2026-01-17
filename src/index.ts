@@ -15,5 +15,8 @@ export type { ChipProps, ChipVariant, ChipSize } from './components/Chip';
 export { TextArea } from './components/TextArea';
 export type { TextAreaProps, TextAreaSize } from './components/TextArea';
 
+export { Icon } from './components/Icon';
+export type { IconProps, IconName, IconSize } from './components/Icon';
+
 // Tokens
 export * from './tokens';

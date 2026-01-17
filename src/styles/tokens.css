@@ -31,6 +31,19 @@
   --color-primary-hover: #8B6AD3;
   --color-primary-active: #C5B4E9;
 
+  /* Semantic Colors - Light Mode (default) */
+  --color-background-primary: var(--color-grey-100);
+  --color-background-secondary: var(--color-grey-200);
+  --color-background-tertiary: var(--color-grey-300);
+  --color-foreground-primary: var(--color-grey-600);
+  --color-foreground-secondary: var(--color-grey-500);
+  --color-foreground-tertiary: var(--color-grey-400);
+  --color-border-subtle: var(--color-grey-200);
+  --color-border-strong: var(--color-grey-300);
+  --color-accent-primary: var(--color-purple-400);
+  --color-accent-primary-hover: var(--color-purple-300);
+  --color-accent-primary-active: var(--color-purple-200);
+
   /* Spacing (defaults) */
   --spacing-1: 4px;
   --spacing-2: 8px;
@@ -71,4 +84,20 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Dark Theme - Inverted semantic colors */
+[data-theme="dark"],
+.dark-theme {
+  --color-background-primary: var(--color-grey-600);
+  --color-background-secondary: var(--color-grey-500);
+  --color-background-tertiary: var(--color-grey-400);
+  --color-foreground-primary: var(--color-grey-100);
+  --color-foreground-secondary: var(--color-grey-200);
+  --color-foreground-tertiary: var(--color-grey-300);
+  --color-border-subtle: var(--color-grey-500);
+  --color-border-strong: var(--color-grey-400);
+  --color-accent-primary: var(--color-purple-300);
+  --color-accent-primary-hover: var(--color-purple-200);
+  --color-accent-primary-active: var(--color-purple-100);
 }
