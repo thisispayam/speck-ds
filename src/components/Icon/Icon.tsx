@@ -10,11 +10,7 @@ export type IconName =
   | 'chevron-down'
   | 'chevron-up'
   | 'chevron-left'
-  | 'chevron-right'
-  | 'check'
-  | 'close'
-  | 'plus'
-  | 'minus';
+  | 'chevron-right';
 
 export type IconSize = 12 | 16 | 20 | 24;
 
@@ -33,16 +29,12 @@ export interface IconProps {
   'aria-hidden'?: boolean;
 }
 
-// SVG paths for each icon
+// SVG paths for each icon (from Figma)
 const iconPaths: Record<IconName, string> = {
-  'chevron-down': 'M6 8L10 12L14 8',
-  'chevron-up': 'M6 12L10 8L14 12',
-  'chevron-left': 'M12 6L8 10L12 14',
-  'chevron-right': 'M8 6L12 10L8 14',
-  'check': 'M4 10L8 14L16 6',
-  'close': 'M5 5L15 15M15 5L5 15',
-  'plus': 'M10 4V16M4 10H16',
-  'minus': 'M4 10H16',
+  'chevron-down': 'M3 5L8 10L13 5',
+  'chevron-up': 'M3 10L8 5L13 10',
+  'chevron-left': 'M10 3L5 8L10 13',
+  'chevron-right': 'M5 3L10 8L5 13',
 };
 
 // ViewBox sizes based on icon size

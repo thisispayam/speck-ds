@@ -16,7 +16,7 @@ const meta: Meta<typeof Icon> = {
   argTypes: {
     name: {
       control: 'select',
-      options: ['chevron-down', 'chevron-up', 'chevron-left', 'chevron-right', 'check', 'close', 'plus', 'minus'],
+      options: ['chevron-down', 'chevron-up', 'chevron-left', 'chevron-right'],
       description: 'Icon name',
     },
     size: {
@@ -48,10 +48,6 @@ export const AllIcons: Story = {
       'chevron-up', 
       'chevron-left',
       'chevron-right',
-      'check',
-      'close',
-      'plus',
-      'minus',
     ];
     
     return (
@@ -105,18 +101,18 @@ export const Sizes: Story = {
 export const Colors: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-      <Icon name="check" size={24} color="#3E06B6" aria-label="Success in purple" />
-      <Icon name="close" size={24} color="#dc2626" aria-label="Error in red" />
-      <Icon name="plus" size={24} color="#16a34a" aria-label="Add in green" />
-      <Icon name="minus" size={24} color="#ca8a04" aria-label="Remove in yellow" />
+      <Icon name="chevron-down" size={24} color="#3E06B6" aria-label="Down in purple" />
+      <Icon name="chevron-up" size={24} color="#dc2626" aria-label="Up in red" />
+      <Icon name="chevron-left" size={24} color="#16a34a" aria-label="Left in green" />
+      <Icon name="chevron-right" size={24} color="#ca8a04" aria-label="Right in yellow" />
     </div>
   ),
 };
 
 export const Accessible: Story = {
   args: {
-    name: 'check',
+    name: 'chevron-down',
     size: 24,
-    'aria-label': 'Success checkmark',
+    'aria-label': 'Expand menu',
   },
 };
