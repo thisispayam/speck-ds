@@ -1,6 +1,6 @@
 {
   "name": "@thisispayam/speck-ds",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Speck DS - A tokenized React design system connected to Figma",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -27,6 +27,7 @@
     "build:storybook": "storybook build",
     "sync:tokens": "node scripts/fetch-figma-tokens.js",
     "fetch:figma": "node scripts/fetch-figma.js",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run sync:tokens && npm run build",
     "storybook": "storybook dev -p 6006",
     "deploy:storybook": "storybook build && gh-pages -d storybook-static",
