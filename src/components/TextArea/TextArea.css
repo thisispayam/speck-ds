@@ -23,7 +23,7 @@
 .ds-textarea__label {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  color: var(--color-primary-500);
+  color: var(--color-accent-primary);
   margin-bottom: var(--spacing-1);
 }
 
@@ -32,9 +32,9 @@
   width: 100%;
   font-family: var(--font-sans);
   font-size: var(--text-sm);
-  color: var(--color-grey-600);
-  background-color: var(--color-grey-100);
-  border: 1px solid var(--color-grey-300);
+  color: var(--color-foreground-primary);
+  background-color: var(--color-background-primary);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
   padding: var(--spacing-3);
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -42,21 +42,21 @@
 }
 
 .ds-textarea::placeholder {
-  color: var(--color-grey-400);
+  color: var(--color-foreground-tertiary);
 }
 
 .ds-textarea:hover:not(:disabled) {
-  border-color: var(--color-grey-400);
+  border-color: var(--color-border-strong);
 }
 
 .ds-textarea:focus:not(:disabled) {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px var(--color-primary-100);
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 0 2px var(--color-accent-primary);
 }
 
 .ds-textarea:disabled {
   cursor: not-allowed;
-  background-color: var(--color-grey-200);
+  background-color: var(--color-background-secondary);
 }
 
 /* Error state */
@@ -115,12 +115,12 @@
 
 .ds-textarea__helper-text {
   font-size: var(--text-xs);
-  color: var(--color-grey-500);
+  color: var(--color-foreground-secondary);
   flex: 1;
 }
 
 .ds-textarea__count {
   font-size: var(--text-xs);
-  color: var(--color-grey-400);
+  color: var(--color-foreground-tertiary);
   white-space: nowrap;
 }

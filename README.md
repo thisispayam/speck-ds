@@ -28,16 +28,19 @@ npm run dev
 ### Using in Your Project
 
 ```bash
-# Install from GitHub
-npm install github:your-username/design-system
+# Install from npm (recommended if published)
+npm install @thisispayam/speck-ds
+
+# Or install directly from GitHub
+npm install github:thisispayam/speck-ds
 
 # Or with a specific tag
-npm install github:your-username/design-system#v1.0.0
+npm install github:thisispayam/speck-ds#v1.0.0
 ```
 
 ```tsx
-import { Button, Dropdown } from '@your-org/design-system';
-import '@your-org/design-system/styles';
+import { Button, Dropdown } from '@thisispayam/speck-ds';
+import '@thisispayam/speck-ds/styles';
 
 function App() {
   return (
@@ -53,6 +56,16 @@ function App() {
     </div>
   );
 }
+```
+
+### Dark Mode
+
+Set `data-theme="dark"` on a parent element (or add `.dark-theme`) to switch tokens:
+
+```tsx
+<div data-theme="dark">
+  <Button variant="primary">Dark Button</Button>
+</div>
 ```
 
 ## Scripts

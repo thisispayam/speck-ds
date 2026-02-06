@@ -22,6 +22,17 @@ const ColorSwatch = ({ name, variable, value }: { name: string; variable: string
   </div>
 );
 
+const SemanticSwatch = ({ name, variable }: { name: string; variable: string }) => (
+  <div className="swatch">
+    <div className="swatch-color" style={{ background: `var(${variable})` }} />
+    <div className="swatch-info">
+      <span className="swatch-name">{name}</span>
+      <span className="swatch-var">{variable}</span>
+      <span className="swatch-value">var({variable})</span>
+    </div>
+  </div>
+);
+
 // Colors
 export const Colors: StoryObj = {
   render: () => (
@@ -67,77 +78,49 @@ export const Colors: StoryObj = {
       <section className="section">
         <h2 className="section-title">Semantic Colors - Light Mode</h2>
         <p style={{ marginBottom: '16px', color: '#666', fontSize: '14px' }}>
-          These tokens automatically switch values in dark mode. Use <code>data-theme="dark"</code> or <code>.dark-theme</code> class.
+          These tokens automatically switch values in dark mode. Use <code>data-theme="dark"</code> or <code>.dark-theme</code>.
         </p>
         <div className="grid grid-auto">
-          <ColorSwatch name="Background Primary" variable="--color-background-primary" value="grey-100" />
-          <ColorSwatch name="Background Secondary" variable="--color-background-secondary" value="grey-200" />
-          <ColorSwatch name="Background Tertiary" variable="--color-background-tertiary" value="grey-300" />
-          <ColorSwatch name="Foreground Primary" variable="--color-foreground-primary" value="grey-600" />
-          <ColorSwatch name="Foreground Secondary" variable="--color-foreground-secondary" value="grey-500" />
-          <ColorSwatch name="Foreground Tertiary" variable="--color-foreground-tertiary" value="grey-400" />
-          <ColorSwatch name="Border Subtle" variable="--color-border-subtle" value="grey-200" />
-          <ColorSwatch name="Border Strong" variable="--color-border-strong" value="grey-300" />
-          <ColorSwatch name="Accent Primary" variable="--color-accent-primary" value="purple-400" />
-          <ColorSwatch name="Accent Hover" variable="--color-accent-primary-hover" value="purple-300" />
-          <ColorSwatch name="Accent Active" variable="--color-accent-primary-active" value="purple-200" />
+          <SemanticSwatch name="Background Primary" variable="--color-background-primary" />
+          <SemanticSwatch name="Background Secondary" variable="--color-background-secondary" />
+          <SemanticSwatch name="Background Tertiary" variable="--color-background-tertiary" />
+          <SemanticSwatch name="Foreground Primary" variable="--color-foreground-primary" />
+          <SemanticSwatch name="Foreground Secondary" variable="--color-foreground-secondary" />
+          <SemanticSwatch name="Foreground Tertiary" variable="--color-foreground-tertiary" />
+          <SemanticSwatch name="Border Subtle" variable="--color-border-subtle" />
+          <SemanticSwatch name="Border Strong" variable="--color-border-strong" />
+          <SemanticSwatch name="Accent Primary" variable="--color-accent-primary" />
+          <SemanticSwatch name="Accent Hover" variable="--color-accent-primary-hover" />
+          <SemanticSwatch name="Accent Active" variable="--color-accent-primary-active" />
         </div>
       </section>
 
-      <section className="section" style={{ background: '#1A1A1A', padding: '24px', borderRadius: '8px' }}>
-        <h2 className="section-title" style={{ color: '#fff' }}>Semantic Colors - Dark Mode</h2>
-        <p style={{ marginBottom: '16px', color: '#C4C4C4', fontSize: '14px' }}>
+      <section
+        className="section"
+        data-theme="dark"
+        style={{
+          background: 'var(--color-background-primary)',
+          color: 'var(--color-foreground-primary)',
+          padding: '24px',
+          borderRadius: '8px',
+        }}
+      >
+        <h2 className="section-title" style={{ color: 'inherit' }}>Semantic Colors - Dark Mode</h2>
+        <p style={{ marginBottom: '16px', color: 'var(--color-foreground-tertiary)', fontSize: '14px' }}>
           Dark mode values for the same semantic tokens.
         </p>
-        <div className="grid grid-auto" data-theme="dark">
-          <div className="swatch">
-            <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: '#1A1A1A', border: '1px solid #4A4A4A' }} />
-            <div className="swatch-info" style={{ color: '#fff' }}>
-              <span className="swatch-name">Background Primary</span>
-              <span className="swatch-var" style={{ color: '#C4C4C4' }}>--color-background-primary</span>
-              <span className="swatch-value" style={{ color: '#8B6AD3' }}>grey-600 (#1A1A1A)</span>
-            </div>
-          </div>
-          <div className="swatch">
-            <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: '#4A4A4A', border: '1px solid #4A4A4A' }} />
-            <div className="swatch-info" style={{ color: '#fff' }}>
-              <span className="swatch-name">Background Secondary</span>
-              <span className="swatch-var" style={{ color: '#C4C4C4' }}>--color-background-secondary</span>
-              <span className="swatch-value" style={{ color: '#8B6AD3' }}>grey-500 (#4A4A4A)</span>
-            </div>
-          </div>
-          <div className="swatch">
-            <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: '#FFFFFF', border: '1px solid #4A4A4A' }} />
-            <div className="swatch-info" style={{ color: '#fff' }}>
-              <span className="swatch-name">Foreground Primary</span>
-              <span className="swatch-var" style={{ color: '#C4C4C4' }}>--color-foreground-primary</span>
-              <span className="swatch-value" style={{ color: '#8B6AD3' }}>grey-100 (#FFFFFF)</span>
-            </div>
-          </div>
-          <div className="swatch">
-            <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: '#4A4A4A', border: '1px solid #767676' }} />
-            <div className="swatch-info" style={{ color: '#fff' }}>
-              <span className="swatch-name">Border Subtle</span>
-              <span className="swatch-var" style={{ color: '#C4C4C4' }}>--color-border-subtle</span>
-              <span className="swatch-value" style={{ color: '#8B6AD3' }}>grey-500 (#4A4A4A)</span>
-            </div>
-          </div>
-          <div className="swatch">
-            <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: '#8B6AD3', border: '1px solid #4A4A4A' }} />
-            <div className="swatch-info" style={{ color: '#fff' }}>
-              <span className="swatch-name">Accent Primary</span>
-              <span className="swatch-var" style={{ color: '#C4C4C4' }}>--color-accent-primary</span>
-              <span className="swatch-value" style={{ color: '#8B6AD3' }}>purple-300 (#8B6AD3)</span>
-            </div>
-          </div>
-          <div className="swatch">
-            <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: '#C5B4E9', border: '1px solid #4A4A4A' }} />
-            <div className="swatch-info" style={{ color: '#fff' }}>
-              <span className="swatch-name">Accent Hover</span>
-              <span className="swatch-var" style={{ color: '#C4C4C4' }}>--color-accent-primary-hover</span>
-              <span className="swatch-value" style={{ color: '#8B6AD3' }}>purple-200 (#C5B4E9)</span>
-            </div>
-          </div>
+        <div className="grid grid-auto">
+          <SemanticSwatch name="Background Primary" variable="--color-background-primary" />
+          <SemanticSwatch name="Background Secondary" variable="--color-background-secondary" />
+          <SemanticSwatch name="Background Tertiary" variable="--color-background-tertiary" />
+          <SemanticSwatch name="Foreground Primary" variable="--color-foreground-primary" />
+          <SemanticSwatch name="Foreground Secondary" variable="--color-foreground-secondary" />
+          <SemanticSwatch name="Foreground Tertiary" variable="--color-foreground-tertiary" />
+          <SemanticSwatch name="Border Subtle" variable="--color-border-subtle" />
+          <SemanticSwatch name="Border Strong" variable="--color-border-strong" />
+          <SemanticSwatch name="Accent Primary" variable="--color-accent-primary" />
+          <SemanticSwatch name="Accent Hover" variable="--color-accent-primary-hover" />
+          <SemanticSwatch name="Accent Active" variable="--color-accent-primary-active" />
         </div>
       </section>
     </div>

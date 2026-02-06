@@ -27,11 +27,11 @@ export const Installation: StoryObj = {
       <section className="mb-6">
         <h2 className="font-semibold text-lg mb-3 border-b pb-2">1. Install the Package</h2>
         <pre className="bg-grey-700 text-white p-4 rounded-md text-sm overflow-x-auto">
-{`npm install @thisispayam/speck-ds`}
+      {`npm install github:thisispayam/speck-ds`}
         </pre>
         <p className="text-sm text-muted mt-2">Or with yarn:</p>
         <pre className="bg-grey-700 text-white p-4 rounded-md text-sm overflow-x-auto">
-{`yarn add @thisispayam/speck-ds`}
+      {`yarn add github:thisispayam/speck-ds`}
         </pre>
       </section>
 

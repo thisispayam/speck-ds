@@ -36,6 +36,75 @@ function rgbaToHex(r, g, b, a = 1) {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
 }
 
+function normalizeModeName(modeName) {
+  const lower = (modeName || 'default').toLowerCase();
+  if (lower.includes('dark')) return 'dark';
+  if (lower.includes('light')) return 'light';
+  return lower.replace(/\s+/g, '-');
+}
+
+function getPathParts(name) {
+  return name
+    .trim()
+    .replace(/\s+/g, '')
+    .replace(/\./g, '/')
+    .split('/')
+    .filter(Boolean);
+}
+
+function resolveVariableValue(value, variablesById, modeId, resolvedType, depth = 0) {
+  if (!value || depth > 10) return null;
+  if (value.type === 'VARIABLE_ALIAS' && value.id) {
+    const refVar = variablesById[value.id];
+    if (!refVar) return null;
+    const refValue = refVar.valuesByMode?.[modeId] ?? refVar.valuesByMode?.[Object.keys(refVar.valuesByMode || {})[0]];
+    const resolved = resolveVariableValue(refValue, variablesById, modeId, refVar.resolvedType, depth + 1);
+    return resolved ? { ...resolved, referenceName: refVar.name } : null;
+  }
+  return { value, resolvedType };
+}
+
+function normalizeValue(resolvedType, value) {
+  if (resolvedType === 'COLOR' && value?.r !== undefined) {
+    return rgbaToHex(value.r, value.g, value.b, value.a);
+  }
+  if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean') {
+    return value;
+  }
+  return null;
+}
+
+function buildDefaultSemanticColors(palette) {
+  return {
+    light: {
+      'background-primary': palette.grey?.['100'],
+      'background-secondary': palette.grey?.['200'],
+      'background-tertiary': palette.grey?.['300'],
+      'foreground-primary': palette.grey?.['600'],
+      'foreground-secondary': palette.grey?.['500'],
+      'foreground-tertiary': palette.grey?.['400'],
+      'border-subtle': palette.grey?.['200'],
+      'border-strong': palette.grey?.['300'],
+      'accent-primary': palette.purple?.['400'],
+      'accent-primary-hover': palette.purple?.['300'],
+      'accent-primary-active': palette.purple?.['200'],
+    },
+    dark: {
+      'background-primary': palette.grey?.['700'] || palette.grey?.['600'],
+      'background-secondary': palette.grey?.['600'] || palette.grey?.['500'],
+      'background-tertiary': palette.grey?.['500'] || palette.grey?.['400'],
+      'foreground-primary': palette.grey?.['100'],
+      'foreground-secondary': palette.grey?.['200'],
+      'foreground-tertiary': palette.grey?.['300'],
+      'border-subtle': palette.grey?.['500'],
+      'border-strong': palette.grey?.['400'],
+      'accent-primary': palette.purple?.['300'],
+      'accent-primary-hover': palette.purple?.['200'],
+      'accent-primary-active': palette.purple?.['100'],
+    },
+  };
+}
+
 /**
  * Fetch variables from Figma Variables API
  */
@@ -52,6 +121,7 @@ async function fetchFigmaVariables() {
       radius: {},
       font: { family: {}, size: {}, weight: {} },
       lineHeight: {},
+      semantic: {},
     };
     
     // Get variable collections and variables
@@ -61,56 +131,68 @@ async function fetchFigmaVariables() {
     console.log(`📦 Found ${Object.keys(collections).length} collection(s)`);
     console.log(`📦 Found ${Object.keys(variables).length} variable(s)`);
     
-    // Process each variable
-    for (const [varId, variable] of Object.entries(variables)) {
+    const modeIdToName = {};
+    for (const collection of Object.values(collections)) {
+      for (const mode of collection.modes || []) {
+        modeIdToName[mode.modeId] = mode.name;
+      }
+    }
+
+    // Process each variable (all modes)
+    for (const [, variable] of Object.entries(variables)) {
       const name = variable.name;
       const resolvedType = variable.resolvedType;
-      
-      // Get the value from the first mode
-      const modeId = Object.keys(variable.valuesByMode)[0];
-      const value = variable.valuesByMode[modeId];
-      
-      // Parse the variable path (e.g., "palette/purple/500" or "space/1")
-      const parts = name.split('/');
-      
-      if (parts[0] === 'palette' && parts.length === 3) {
-        // Color: palette/purple/500
-        const colorGroup = parts[1].toLowerCase();
-        const shade = parts[2];
-        
-        if (colorGroup === 'purple' || colorGroup === 'grey' || colorGroup === 'gray') {
+      const parts = getPathParts(name);
+      const modeIds = Object.keys(variable.valuesByMode || {});
+
+      for (const modeId of modeIds) {
+        const modeName = modeIdToName[modeId] || 'default';
+        const modeKey = normalizeModeName(modeName);
+        const rawValue = variable.valuesByMode[modeId];
+        const resolved = resolveVariableValue(rawValue, variables, modeId, resolvedType);
+        const finalValue = resolved ? normalizeValue(resolved.resolvedType, resolved.value) : null;
+        if (finalValue === null || finalValue === undefined) continue;
+
+        if (parts[0] === 'palette' && parts.length >= 3) {
+          const colorGroup = parts[1].toLowerCase();
+          const shade = parts[2];
           const normalizedGroup = colorGroup === 'gray' ? 'grey' : colorGroup;
-          if (!tokens.palette[normalizedGroup]) tokens.palette[normalizedGroup] = {};
-          
-          if (resolvedType === 'COLOR' && value.r !== undefined) {
-            tokens.palette[normalizedGroup][shade] = rgbaToHex(value.r, value.g, value.b, value.a);
+          if (normalizedGroup === 'purple' || normalizedGroup === 'grey') {
+            if (!tokens.palette[normalizedGroup][shade]) {
+              tokens.palette[normalizedGroup][shade] = finalValue;
+              console.log(`   🎨 ${name}: ${finalValue}`);
+            }
           }
+        } else if (parts[0] === 'space' && parts.length >= 2) {
+          if (!tokens.space[parts[1]]) {
+            tokens.space[parts[1]] = finalValue;
+            console.log(`   📏 ${name}: ${finalValue}`);
+          }
+        } else if (parts[0] === 'radius' && parts.length >= 2) {
+          if (!tokens.radius[parts[1]]) {
+            tokens.radius[parts[1]] = finalValue;
+            console.log(`   🔘 ${name}: ${finalValue}`);
+          }
+        } else if (parts[0] === 'font' && parts.length >= 3) {
+          const fontGroup = parts[1];
+          const fontKey = parts[2];
+          if (!tokens.font[fontGroup]) tokens.font[fontGroup] = {};
+          if (!tokens.font[fontGroup][fontKey]) {
+            tokens.font[fontGroup][fontKey] = finalValue;
+            console.log(`   🔤 ${name}: ${finalValue}`);
+          }
+        } else if (parts[0] === 'lineHeight' && parts.length >= 2) {
+          if (!tokens.lineHeight[parts[1]]) {
+            tokens.lineHeight[parts[1]] = finalValue;
+            console.log(`   📐 ${name}: ${finalValue}`);
+          }
+        } else if (parts[0] === 'color' && parts.length >= 3) {
+          const semanticGroup = parts[1].toLowerCase();
+          const semanticKey = `${semanticGroup}-${parts.slice(2).join('-')}`.toLowerCase();
+          if (!tokens.semantic[modeKey]) tokens.semantic[modeKey] = {};
+          tokens.semantic[modeKey][semanticKey] = finalValue;
+          console.log(`   🎨 ${modeKey} ${name}: ${finalValue}`);
         }
-        console.log(`   🎨 ${name}: ${tokens.palette[colorGroup]?.[shade] || value}`);
-        
-      } else if (parts[0] === 'space' && parts.length === 2) {
-        // Spacing: space/1
-        tokens.space[parts[1]] = value;
-        console.log(`   📏 ${name}: ${value}`);
-        
-      } else if (parts[0] === 'radius' && parts.length === 2) {
-        // Radius: radius/sm
-        tokens.radius[parts[1]] = value;
-        console.log(`   🔘 ${name}: ${value}`);
-        
-      } else if (parts[0] === 'font' && parts.length === 3) {
-        // Font: font/family/sans or font/size/md or font/weight/500
-        const fontGroup = parts[1];
-        const fontKey = parts[2];
-        
-        if (!tokens.font[fontGroup]) tokens.font[fontGroup] = {};
-        tokens.font[fontGroup][fontKey] = value;
-        console.log(`   🔤 ${name}: ${value}`);
-        
-      } else if (parts[0] === 'lineHeight' && parts.length === 2) {
-        // Line height: lineHeight/standard
-        tokens.lineHeight[parts[1]] = value;
-        console.log(`   📐 ${name}: ${value}`);
       }
     }
     
@@ -137,13 +219,14 @@ async function fetchFromFile() {
   
   console.log(`📁 File: ${file.name}`);
   
-  const tokens = {
-    palette: { purple: {}, grey: {} },
-    space: {},
-    radius: {},
-    font: { family: {}, size: {}, weight: {} },
-    lineHeight: {},
-  };
+    const tokens = {
+      palette: { purple: {}, grey: {} },
+      space: {},
+      radius: {},
+      font: { family: {}, size: {}, weight: {} },
+      lineHeight: {},
+      semantic: {},
+    };
   
   // Extract colors from frames named "Purple" and "Grey"
   function findColorFrames(node) {
@@ -249,6 +332,19 @@ function generateCssVariables(tokens) {
     css += `  --color-primary-hover: ${tokens.palette.purple['400']};\n`;
     css += `  --color-primary-active: ${tokens.palette.purple['300']};\n\n`;
   }
+
+  // Semantic Colors - Light Mode (default)
+  const defaultSemantic = buildDefaultSemanticColors(tokens.palette);
+  const semanticLight = tokens.semantic?.light && Object.keys(tokens.semantic.light).length > 0
+    ? tokens.semantic.light
+    : defaultSemantic.light;
+
+  css += `  /* Semantic Colors - Light Mode (default) */\n`;
+  for (const [key, value] of Object.entries(semanticLight)) {
+    if (!value) continue;
+    css += `  --color-${key}: ${value};\n`;
+  }
+  css += '\n';
 
   // Spacing
   if (Object.keys(tokens.space).length > 0) {
@@ -371,6 +467,19 @@ function generateCssVariables(tokens) {
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 `;
+
+  const semanticDark = tokens.semantic?.dark && Object.keys(tokens.semantic.dark).length > 0
+    ? tokens.semantic.dark
+    : defaultSemantic.dark;
+
+  if (semanticDark && Object.keys(semanticDark).length > 0) {
+    css += `\n/* Dark Theme */\n[data-theme="dark"],\n.dark-theme {\n`;
+    for (const [key, value] of Object.entries(semanticDark)) {
+      if (!value) continue;
+      css += `  --color-${key}: ${value};\n`;
+    }
+    css += '}\n';
+  }
   
   return css;
 }
@@ -425,6 +534,11 @@ function generateTypeScriptTokens(tokens) {
     ? tokens.lineHeight
     : { tight: 1.15, standard: 1.35, relaxed: 1.6, reader: 1.75 };
 
+  const defaultSemantic = buildDefaultSemanticColors(tokens.palette);
+  const semanticColors = tokens.semantic && Object.keys(tokens.semantic).length > 0
+    ? tokens.semantic
+    : defaultSemantic;
+
   return `/**
  * Speck DS - Design System Tokens
  * Auto-generated from Figma
@@ -444,6 +558,8 @@ export const typography = {
   lineHeight: ${JSON.stringify(lineHeight, null, 4)},
 } as const;
 
+export const semanticColors = ${JSON.stringify(semanticColors, null, 2)} as const;
+
 export const shadows = {
   sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
   md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
@@ -460,6 +576,8 @@ export type BorderRadiusKey = keyof typeof borderRadius;
 export type FontSize = keyof typeof typography.fontSize;
 export type FontWeight = keyof typeof typography.fontWeight;
 export type LineHeight = keyof typeof typography.lineHeight;
+export type SemanticMode = keyof typeof semanticColors;
+export type SemanticColorKey = keyof typeof semanticColors.light;
 `;
 }
 

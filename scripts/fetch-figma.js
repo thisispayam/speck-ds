@@ -30,6 +30,37 @@ function rgbaToHex(r, g, b) {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
 }
 
+function buildDefaultSemanticColors(palette) {
+  return {
+    light: {
+      'background-primary': palette.grey?.['100'],
+      'background-secondary': palette.grey?.['200'],
+      'background-tertiary': palette.grey?.['300'],
+      'foreground-primary': palette.grey?.['600'],
+      'foreground-secondary': palette.grey?.['500'],
+      'foreground-tertiary': palette.grey?.['400'],
+      'border-subtle': palette.grey?.['200'],
+      'border-strong': palette.grey?.['300'],
+      'accent-primary': palette.purple?.['400'],
+      'accent-primary-hover': palette.purple?.['300'],
+      'accent-primary-active': palette.purple?.['200'],
+    },
+    dark: {
+      'background-primary': palette.grey?.['700'] || palette.grey?.['600'],
+      'background-secondary': palette.grey?.['600'] || palette.grey?.['500'],
+      'background-tertiary': palette.grey?.['500'] || palette.grey?.['400'],
+      'foreground-primary': palette.grey?.['100'],
+      'foreground-secondary': palette.grey?.['200'],
+      'foreground-tertiary': palette.grey?.['300'],
+      'border-subtle': palette.grey?.['500'],
+      'border-strong': palette.grey?.['400'],
+      'accent-primary': palette.purple?.['300'],
+      'accent-primary-hover': palette.purple?.['200'],
+      'accent-primary-active': palette.purple?.['100'],
+    },
+  };
+}
+
 /**
  * Extract tokens from Figma document
  */
@@ -40,6 +71,7 @@ function extractTokensFromDocument(document) {
     radius: {},
     font: { family: {}, size: {}, weight: {} },
     lineHeight: {},
+    semantic: { light: {}, dark: {} },
   };
 
   // Find color frames
@@ -144,6 +176,25 @@ function extractTokensFromDocument(document) {
         if (serifMatch) tokens.font.family.serif = serifMatch[1].trim();
         if (sansMatch) tokens.font.family.sans = sansMatch[1].trim();
       }
+
+      // Parse semantic colors (Light/Dark mode blocks)
+      if (text.toLowerCase().includes('color.background') || text.toLowerCase().includes('color.foreground')) {
+        const isDark = text.toLowerCase().includes('dark mode');
+        const modeKey = isDark ? 'dark' : 'light';
+        const lines = text.split('\n');
+        for (const line of lines) {
+          const match = line.match(/color\.(background|foreground|border|accent)\.([\w.-]+)\s*=\s*([a-zA-Z]+)[-\s]?(\d+)?/);
+          if (!match) continue;
+          const group = match[1].toLowerCase();
+          const name = match[2].replace(/\./g, '-').toLowerCase();
+          const paletteGroup = match[3].toLowerCase();
+          const shade = match[4];
+          const hex = shade ? tokens.palette[paletteGroup]?.[shade] : undefined;
+          if (hex) {
+            tokens.semantic[modeKey][`${group}-${name}`] = hex;
+          }
+        }
+      }
     }
     
     if (node.children) {
@@ -198,18 +249,17 @@ function generateCssVariables(tokens) {
   }
 
   // Semantic Colors - Light Mode
+  const defaultSemantic = buildDefaultSemanticColors(tokens.palette);
+  const semanticLight = tokens.semantic?.light && Object.keys(tokens.semantic.light).length > 0
+    ? tokens.semantic.light
+    : defaultSemantic.light;
+
   css += `  /* Semantic Colors - Light Mode (default) */\n`;
-  css += `  --color-background-primary: var(--color-grey-100);\n`;
-  css += `  --color-background-secondary: var(--color-grey-200);\n`;
-  css += `  --color-background-tertiary: var(--color-grey-300);\n`;
-  css += `  --color-foreground-primary: var(--color-grey-600);\n`;
-  css += `  --color-foreground-secondary: var(--color-grey-500);\n`;
-  css += `  --color-foreground-tertiary: var(--color-grey-400);\n`;
-  css += `  --color-border-subtle: var(--color-grey-200);\n`;
-  css += `  --color-border-strong: var(--color-grey-300);\n`;
-  css += `  --color-accent-primary: var(--color-purple-400);\n`;
-  css += `  --color-accent-primary-hover: var(--color-purple-300);\n`;
-  css += `  --color-accent-primary-active: var(--color-purple-200);\n\n`;
+  for (const [key, value] of Object.entries(semanticLight)) {
+    if (!value) continue;
+    css += `  --color-${key}: ${value};\n`;
+  }
+  css += '\n';
 
   // Spacing
   if (Object.keys(tokens.space).length > 0) {
@@ -322,22 +372,20 @@ function generateCssVariables(tokens) {
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-/* Dark Theme */
-[data-theme="dark"],
-.dark-theme {
-  --color-background-primary: var(--color-grey-700);
-  --color-background-secondary: var(--color-grey-600);
-  --color-background-tertiary: var(--color-grey-500);
-  --color-foreground-primary: var(--color-grey-100);
-  --color-foreground-secondary: var(--color-grey-200);
-  --color-foreground-tertiary: var(--color-grey-300);
-  --color-border-subtle: var(--color-grey-500);
-  --color-border-strong: var(--color-grey-400);
-  --color-accent-primary: var(--color-purple-300);
-  --color-accent-primary-hover: var(--color-purple-200);
-  --color-accent-primary-active: var(--color-purple-100);
-}
 `;
+
+  const semanticDark = tokens.semantic?.dark && Object.keys(tokens.semantic.dark).length > 0
+    ? tokens.semantic.dark
+    : defaultSemantic.dark;
+
+  if (semanticDark && Object.keys(semanticDark).length > 0) {
+    css += `\n/* Dark Theme */\n[data-theme="dark"],\n.dark-theme {\n`;
+    for (const [key, value] of Object.entries(semanticDark)) {
+      if (!value) continue;
+      css += `  --color-${key}: ${value};\n`;
+    }
+    css += '}\n';
+  }
   
   return css;
 }
@@ -393,6 +441,11 @@ function generateTypeScriptTokens(tokens) {
     ? tokens.lineHeight
     : { tight: 1.15, standard: 1.35, relaxed: 1.6, reader: 1.75 };
 
+  const defaultSemantic = buildDefaultSemanticColors(tokens.palette);
+  const semanticColors = tokens.semantic && Object.keys(tokens.semantic).length > 0
+    ? tokens.semantic
+    : defaultSemantic;
+
   return `/**
  * Speck DS - Design System Tokens
  * Auto-generated from Figma
@@ -412,6 +465,8 @@ export const typography = {
   lineHeight: ${JSON.stringify(lineHeight, null, 4)},
 } as const;
 
+export const semanticColors = ${JSON.stringify(semanticColors, null, 2)} as const;
+
 export const shadows = {
   sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
   md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
@@ -428,6 +483,8 @@ export type BorderRadiusKey = keyof typeof borderRadius;
 export type FontSize = keyof typeof typography.fontSize;
 export type FontWeight = keyof typeof typography.fontWeight;
 export type LineHeight = keyof typeof typography.lineHeight;
+export type SemanticMode = keyof typeof semanticColors;
+export type SemanticColorKey = keyof typeof semanticColors.light;
 `;
 }
 
