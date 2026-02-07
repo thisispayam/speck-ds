@@ -233,16 +233,11 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
     const dropdownId = id || `dropdown-${Math.random().toString(36).substr(2, 9)}`;
     const listId = `${dropdownId}-list`;
     
-    // User-provided aria-label takes precedence, then placeholder if no label
-    const ariaLabel = ariaLabelProp || (label ? undefined : placeholder);
+    // User-provided aria-label takes precedence, then label or placeholder
+    const ariaLabel = ariaLabelProp || label || placeholder;
 
     return (
       <div className={classNames} ref={dropdownRef}>
-        {label && (
-          <label className="ds-dropdown__label" id={`${dropdownId}-label`} htmlFor={dropdownId}>
-            {label}
-          </label>
-        )}
         <div
           ref={ref}
           className="ds-dropdown__trigger"
@@ -253,20 +248,22 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           aria-controls={listId}
           aria-disabled={disabled}
           aria-label={ariaLabel}
-          aria-labelledby={label ? `${dropdownId}-label` : undefined}
           tabIndex={disabled ? -1 : 0}
           onClick={handleToggle}
           onKeyDown={handleKeyDown}
         >
-          <span className={`ds-dropdown__value ${!selectedOption ? 'ds-dropdown__placeholder' : ''}`}>
-            {selectedOption ? (
-              <>
-                {selectedOption.icon && <span className="ds-dropdown__option-icon">{selectedOption.icon}</span>}
-                {selectedOption.label}
-              </>
-            ) : (
-              placeholder
-            )}
+          <span className="ds-dropdown__content">
+            {label && <span className="ds-dropdown__label-inner">{label}</span>}
+            <span className={`ds-dropdown__value ${!selectedOption ? 'ds-dropdown__placeholder' : ''}`}>
+              {selectedOption ? (
+                <>
+                  {selectedOption.icon && <span className="ds-dropdown__option-icon">{selectedOption.icon}</span>}
+                  {selectedOption.label}
+                </>
+              ) : (
+                placeholder
+              )}
+            </span>
           </span>
           <span className="ds-dropdown__arrow" aria-hidden="true">
             <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size={12} />

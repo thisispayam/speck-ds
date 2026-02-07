@@ -34,7 +34,7 @@
 .ds-button--sm {
   height: 28px;
   padding: 6px var(--spacing-3);
-  font-size: var(--text-xs);
+  font-size: var(--text-sm); /* 14px */
 }
 
 .ds-button--md {
