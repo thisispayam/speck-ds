@@ -1,7 +1,7 @@
 /**
  * Speck DS - Design System Tokens
  * Auto-generated from Figma
- * Last sync: 2026-02-07T06:06:51.208Z
+ * Last sync: 2026-02-11T07:23:04.561Z
  */
 
 export const colors = {
