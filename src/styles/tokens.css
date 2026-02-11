@@ -1,7 +1,7 @@
 /**
  * Speck DS - Design System Tokens
  * Auto-generated from Figma
- * Last sync: 2026-01-17T00:46:09.159Z
+ * Last sync: 2026-02-07T06:06:51.206Z
  */
 
 :root {
@@ -21,28 +21,28 @@
   --color-grey-600: #1A1A1A;
   --color-grey-700: #000000;
 
-  /* Primary (from Purple - accent is purple-400) */
+  /* Primary (from Purple) */
   --color-primary-50: #ECE6F8;
   --color-primary-100: #ECE6F8;
   --color-primary-200: #C5B4E9;
   --color-primary-300: #8B6AD3;
   --color-primary-400: #3E06B6;
-  --color-primary-500: #3E06B6;
-  --color-primary-hover: #8B6AD3;
-  --color-primary-active: #C5B4E9;
+  --color-primary-500: #1F035B;
+  --color-primary-hover: #3E06B6;
+  --color-primary-active: #8B6AD3;
 
   /* Semantic Colors - Light Mode (default) */
-  --color-background-primary: var(--color-grey-100);
-  --color-background-secondary: var(--color-grey-200);
-  --color-background-tertiary: var(--color-grey-300);
-  --color-foreground-primary: var(--color-grey-600);
-  --color-foreground-secondary: var(--color-grey-500);
-  --color-foreground-tertiary: var(--color-grey-400);
-  --color-border-subtle: var(--color-grey-200);
-  --color-border-strong: var(--color-grey-300);
-  --color-accent-primary: var(--color-purple-400);
-  --color-accent-primary-hover: var(--color-purple-300);
-  --color-accent-primary-active: var(--color-purple-200);
+  --color-background-primary: #FFFFFF;
+  --color-background-secondary: #E5E5E5;
+  --color-background-tertiary: #C4C4C4;
+  --color-foreground-primary: #1A1A1A;
+  --color-foreground-secondary: #4A4A4A;
+  --color-foreground-tertiary: #767676;
+  --color-border-subtle: #E5E5E5;
+  --color-border-strong: #C4C4C4;
+  --color-accent-primary: #3E06B6;
+  --color-accent-primary-hover: #8B6AD3;
+  --color-accent-primary-active: #C5B4E9;
 
   /* Spacing (defaults) */
   --spacing-1: 4px;
@@ -86,18 +86,18 @@
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-/* Dark Theme - Inverted semantic colors */
+/* Dark Theme */
 [data-theme="dark"],
 .dark-theme {
-  --color-background-primary: var(--color-grey-600);
-  --color-background-secondary: var(--color-grey-500);
-  --color-background-tertiary: var(--color-grey-400);
-  --color-foreground-primary: var(--color-grey-100);
-  --color-foreground-secondary: var(--color-grey-200);
-  --color-foreground-tertiary: var(--color-grey-300);
-  --color-border-subtle: var(--color-grey-500);
-  --color-border-strong: var(--color-grey-400);
-  --color-accent-primary: var(--color-purple-300);
-  --color-accent-primary-hover: var(--color-purple-200);
-  --color-accent-primary-active: var(--color-purple-100);
+  --color-background-primary: #000000;
+  --color-background-secondary: #1A1A1A;
+  --color-background-tertiary: #4A4A4A;
+  --color-foreground-primary: #FFFFFF;
+  --color-foreground-secondary: #E5E5E5;
+  --color-foreground-tertiary: #C4C4C4;
+  --color-border-subtle: #4A4A4A;
+  --color-border-strong: #767676;
+  --color-accent-primary: #8B6AD3;
+  --color-accent-primary-hover: #C5B4E9;
+  --color-accent-primary-active: #ECE6F8;
 }

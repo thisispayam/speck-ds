@@ -1,7 +1,7 @@
 /**
  * Speck DS - Design System Tokens
  * Auto-generated from Figma
- * Last sync: 2026-01-17T00:46:09.159Z
+ * Last sync: 2026-02-07T06:06:51.208Z
  */
 
 export const colors = {
@@ -94,9 +94,9 @@ export const semanticColors = {
     "accent-primary-active": "#C5B4E9"
   },
   "dark": {
-    "background-primary": "#1A1A1A",
-    "background-secondary": "#4A4A4A",
-    "background-tertiary": "#767676",
+    "background-primary": "#000000",
+    "background-secondary": "#1A1A1A",
+    "background-tertiary": "#4A4A4A",
     "foreground-primary": "#FFFFFF",
     "foreground-secondary": "#E5E5E5",
     "foreground-tertiary": "#C4C4C4",
