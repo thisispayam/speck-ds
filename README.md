@@ -34,8 +34,8 @@ npm install @thisispayam/speck-ds
 # Or install directly from GitHub
 npm install github:thisispayam/speck-ds
 
-# Or with a specific tag
-npm install github:thisispayam/speck-ds#v1.0.0
+# Or with a specific tag (recommended for releases)
+npm install github:thisispayam/speck-ds#v1.0.4
 ```
 
 ```tsx
